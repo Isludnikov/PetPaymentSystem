@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PetPaymentSystem.Middleware;
-using PetPaymentSystem.models.generated;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using PetPaymentSystem.Models.Generated;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using System;
 
 namespace PetPaymentSystem
 {
@@ -26,9 +25,13 @@ namespace PetPaymentSystem
         {
             services.AddDbContextPool<PaymentSystemContext>(options => options
                 .UseMySql(Configuration.GetConnectionString("MySql"), mySqlOptions => mySqlOptions
-                    .ServerVersion(new ServerVersion(new Version(8, 0, 18), ServerType.MySql))
+                    .ServerVersion(new ServerVersion(new Version(8, 0, 18)))
                 ));
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,9 +41,8 @@ namespace PetPaymentSystem
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseRouting();
-
+            app.UseMiddleware<ApiLoggingMiddleware>();
             app.UseMiddleware<ApiAuthenticationMiddleware>();
 
             app.UseEndpoints(endpoints =>

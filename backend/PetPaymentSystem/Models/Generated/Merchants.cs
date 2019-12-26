@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PetPaymentSystem.models.generated
+namespace PetPaymentSystem.Models.Generated
 {
     public partial class Merchants
     {
@@ -12,7 +12,7 @@ namespace PetPaymentSystem.models.generated
 
         public int Id { get; set; }
         public string Token { get; set; }
-        public byte[] SignKey { get; set; }
+        public string SignKey { get; set; }
         public string ShortName { get; set; }
         public string FullName { get; set; }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PetPaymentSystem.models.generated
+namespace PetPaymentSystem.Models.Generated
 {
     public partial class MerchantIpRanges
     {

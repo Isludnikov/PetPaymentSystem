@@ -1,4 +1,4 @@
-.vs/*
-PetPaymentSystem/bin/*
-PetPaymentSystem/debug/*
-PetPaymentSystem/obj/*
+backend/.vs/*
+backend/PetPaymentSystem/bin/*
+backend/PetPaymentSystem/debug/*
+backend/PetPaymentSystem/obj/*

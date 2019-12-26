@@ -10,7 +10,7 @@ namespace PetPaymentSystem.Controllers
         [HttpPost]
         public string Echo()
         {
-            return $"Echo {DateTime.Now}";
+            return $"{DateTime.UtcNow} UTC";
         }
     }
 }

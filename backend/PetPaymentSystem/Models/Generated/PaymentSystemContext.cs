@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace PetPaymentSystem.models.generated
+namespace PetPaymentSystem.Models.Generated
 {
     public partial class PaymentSystemContext : DbContext
     {
-        public PaymentSystemContext()
-        {
-        }
-
         public PaymentSystemContext(DbContextOptions<PaymentSystemContext> options)
             : base(options)
         {
@@ -64,9 +62,9 @@ namespace PetPaymentSystem.models.generated
                     .HasCollation("utf8_unicode_ci");
 
                 entity.Property(e => e.SignKey)
-                    .IsRequired()
-                    .HasMaxLength(255)
-                    .IsFixedLength();
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_bin");
 
                 entity.Property(e => e.Token)
                     .IsRequired()

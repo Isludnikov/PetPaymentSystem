@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Helpers\IpSet\" />
     <Folder Include="Models\Generated\" />
   </ItemGroup>
 
