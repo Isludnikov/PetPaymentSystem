@@ -23,7 +23,7 @@ namespace PetPaymentSystem
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<PaymentSystemContext>(options => options
+            services.AddDbContext<PaymentSystemContext>(options => options
                 .UseMySql(Configuration.GetConnectionString("MySql"), mySqlOptions => mySqlOptions
                     .ServerVersion(new ServerVersion(new Version(8, 0, 18)))
                 ));

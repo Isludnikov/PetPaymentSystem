@@ -4,6 +4,7 @@ using PetPaymentSystem.Helpers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using PetPaymentSystem.Constants;
 
 namespace PetPaymentSystem.Middleware
 {
@@ -25,7 +26,9 @@ namespace PetPaymentSystem.Middleware
             else
             {
                 var logId = Guid.NewGuid().ToString();
-                _logger.LogInformation($"REQUEST -[{logId}] body - [{HttpContextHelper.GetBody(context.Request)}]");
+                var sign = context.Request.Headers[GlobalConstants.SignHeader];
+                var auth = context.Request.Headers[GlobalConstants.AuthHeader];
+                _logger.LogInformation($"REQUEST - [{logId}] auth - [{MaskHelper.MaskHeader(auth)}] sign - [{MaskHelper.MaskHeader(sign)}] body - [{MaskHelper.MaskApiRequest(HttpContextHelper.GetBody(context.Request))}]");
 
                 string responseContent;
 

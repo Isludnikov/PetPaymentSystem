@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PetPaymentSystem.Constants;
 using PetPaymentSystem.Helpers;
 using PetPaymentSystem.Helpers.IpSet;
+using PetPaymentSystem.Models.Generated;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using PetPaymentSystem.Constants;
-using PetPaymentSystem.Models.Generated;
 
 namespace PetPaymentSystem.Middleware
 {
@@ -21,22 +20,20 @@ namespace PetPaymentSystem.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ApiAuthenticationMiddleware> _logger;
-        private readonly PaymentSystemContext _dbContext;
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
 
-        public ApiAuthenticationMiddleware(RequestDelegate next, ILogger<ApiAuthenticationMiddleware> logger, DbContextPool<PaymentSystemContext> dbContext, IConfiguration configuration, IWebHostEnvironment env)
+        public ApiAuthenticationMiddleware(RequestDelegate next, ILogger<ApiAuthenticationMiddleware> logger, IConfiguration configuration, IWebHostEnvironment env)
         {
             _next = next;
             _logger = logger;
-            _dbContext = DbContextExtractor.Extract(dbContext);
             _configuration = configuration;
             _env = env;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, PaymentSystemContext dbContext)
         {
-            if (Check(context))
+            if (Check(context, dbContext))
             {
                 await _next.Invoke(context);
             }
@@ -47,7 +44,7 @@ namespace PetPaymentSystem.Middleware
             }
         }
 
-        private bool Check(HttpContext context)
+        private bool Check(HttpContext context, PaymentSystemContext dbContext)
         {
             if (!context.Request.Path.Value.StartsWith("/api/")) return true;
 
@@ -59,13 +56,17 @@ namespace PetPaymentSystem.Middleware
             }
 
             var token = context.Request.Headers[GlobalConstants.AuthHeader][0];
-            var merchant = _dbContext.Merchants.Include(i=>i.MerchantIpRanges).FirstOrDefault(x => x.Token == token);
+            var merchant = dbContext.Merchants.Include(i => i.MerchantIpRanges).FirstOrDefault(x => x.Token == token);
             if (merchant == null)
             {
                 _logger.LogWarning("No merchant with token");
                 return false;
             }
-
+            if (!merchant.Active)
+            {
+                _logger.LogWarning($"Merchant id-[{merchant.Id}] name-[{merchant.ShortName}] deactivated");
+                return false;
+            }
             if (!_env.IsDevelopment() || _configuration.GetSection("DebugFlags").GetValue<bool>("CheckSign"))
             {
                 var sign = context.Request.Headers[GlobalConstants.SignHeader][0];
