@@ -1,13 +1,15 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using PetPaymentSystem.Validators;
 
 namespace PetPaymentSystem.DTO.V1
 {
     public class DebitRequest:IApiRequest
     {
         [Required]
-        public string MerchantOrderId{ get; set; }
+        public string OrderId{ get; set; }
         [Required]
+        [Currency]
         public string Currency{ get; set; }
         [Required]
         public string Pan { get; set; }
@@ -18,7 +20,8 @@ namespace PetPaymentSystem.DTO.V1
         [Required]
         public string Cvv { get; set; }
         [Required]
-        public decimal Amount{ get; set; }
+        public long Amount{ get; set; }
+        public string OrderDescription { get; set; }
 
     }
 }

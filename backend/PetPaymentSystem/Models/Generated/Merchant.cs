@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace PetPaymentSystem.Models.Generated
 {
-    public partial class Merchants
+    public partial class Merchant
     {
-        public Merchants()
+        public Merchant()
         {
-            MerchantIpRanges = new HashSet<MerchantIpRanges>();
+            MerchantIpRange = new HashSet<MerchantIpRange>();
+            Session = new HashSet<Session>();
         }
 
         public int Id { get; set; }
@@ -17,6 +18,7 @@ namespace PetPaymentSystem.Models.Generated
         public string FullName { get; set; }
         public bool Active { get; set; }
 
-        public virtual ICollection<MerchantIpRanges> MerchantIpRanges { get; set; }
+        public virtual ICollection<MerchantIpRange> MerchantIpRange { get; set; }
+        public virtual ICollection<Session> Session { get; set; }
     }
 }

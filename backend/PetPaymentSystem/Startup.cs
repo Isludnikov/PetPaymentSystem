@@ -31,6 +31,7 @@ namespace PetPaymentSystem
             {
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.IgnoreNullValues = true;
             });
         }
 

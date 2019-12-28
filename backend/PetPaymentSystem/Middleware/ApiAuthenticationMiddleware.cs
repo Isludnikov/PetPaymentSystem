@@ -13,6 +13,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using PetPaymentSystem.Cachers;
 
 namespace PetPaymentSystem.Middleware
 {
@@ -56,7 +57,9 @@ namespace PetPaymentSystem.Middleware
             }
 
             var token = context.Request.Headers[GlobalConstants.AuthHeader][0];
-            var merchant = dbContext.Merchants.Include(i => i.MerchantIpRanges).FirstOrDefault(x => x.Token == token);
+            var merchant = MerchantCache.GetMerchant(token, dbContext);
+            context.Items.Add("Merchant", merchant );
+            //var merchant = dbContext.Merchant.Include(i => i.MerchantIpRange).FirstOrDefault(x => x.Token == token);
             if (merchant == null)
             {
                 _logger.LogWarning("No merchant with token");
@@ -83,10 +86,10 @@ namespace PetPaymentSystem.Middleware
 
             if (!_env.IsDevelopment() || _configuration.GetSection("DebugFlags").GetValue<bool>("CheckIP"))
             {
-                if (merchant.MerchantIpRanges.Count != 0)
+                if (merchant.MerchantIpRange.Count != 0)
                 {
                     var ip = context.Connection.RemoteIpAddress.ToString();
-                    var set = IpSet.ParseOrDefault(merchant.MerchantIpRanges.Select(x => x.Iprange));
+                    var set = IpSet.ParseOrDefault(merchant.MerchantIpRange.Select(x => x.Iprange));
                     if (!set.Contains(ip))
                     {
                         _logger.LogWarning($"Ip [{ip}] not allowed");

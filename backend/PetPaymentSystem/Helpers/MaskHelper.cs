@@ -8,7 +8,7 @@ namespace PetPaymentSystem.Helpers
         private const int DefaultLength = 3;
         private const char DefaultChar = '*';
         private const string PanRegex = "(\"pan\"\\s?:\\s?\"\\d{6})(\\d{3,})(\\d{4}\")";
-        private const string CvvRegex = "(\"cvv\"\\s?:\\s?\")(\\d{3,4})(\")";
+        private const string CvvRegex = "(\"cvv\"\\s?:\\s?\")(\\d{3,})(\")";
         private static Regex panRegex = new Regex(PanRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static Regex cvvRegex = new Regex(CvvRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase);
         public static string MaskApiRequest(string request)

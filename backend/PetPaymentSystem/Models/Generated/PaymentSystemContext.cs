@@ -11,8 +11,11 @@ namespace PetPaymentSystem.Models.Generated
         {
         }
 
-        public virtual DbSet<MerchantIpRanges> MerchantIpRanges { get; set; }
-        public virtual DbSet<Merchants> Merchants { get; set; }
+        public virtual DbSet<Merchant> Merchant { get; set; }
+        public virtual DbSet<MerchantIpRange> MerchantIpRange { get; set; }
+        public virtual DbSet<Operation> Operation { get; set; }
+        public virtual DbSet<Processing> Processing { get; set; }
+        public virtual DbSet<Session> Session { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -20,30 +23,7 @@ namespace PetPaymentSystem.Models.Generated
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MerchantIpRanges>(entity =>
-            {
-                entity.HasIndex(e => e.MerchantId)
-                    .HasName("FK_MerchantIpRanges_Merchants");
-
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.Iprange)
-                    .IsRequired()
-                    .HasColumnName("IPRange")
-                    .HasColumnType("varchar(255)")
-                    .HasCharSet("utf8")
-                    .HasCollation("utf8_unicode_ci");
-
-                entity.Property(e => e.MerchantId).HasColumnType("int(11)");
-
-                entity.HasOne(d => d.Merchant)
-                    .WithMany(p => p.MerchantIpRanges)
-                    .HasForeignKey(d => d.MerchantId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_MerchantIpRanges_Merchants");
-            });
-
-            modelBuilder.Entity<Merchants>(entity =>
+            modelBuilder.Entity<Merchant>(entity =>
             {
                 entity.HasIndex(e => e.Token)
                     .HasName("IX_token")
@@ -71,6 +51,140 @@ namespace PetPaymentSystem.Models.Generated
                     .HasColumnType("varchar(32)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_unicode_ci");
+            });
+
+            modelBuilder.Entity<MerchantIpRange>(entity =>
+            {
+                entity.HasIndex(e => e.MerchantId)
+                    .HasName("FK_MerchantIpRanges_Merchants");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Iprange)
+                    .IsRequired()
+                    .HasColumnName("IPRange")
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.MerchantId).HasColumnType("int(11)");
+
+                entity.HasOne(d => d.Merchant)
+                    .WithMany(p => p.MerchantIpRange)
+                    .HasForeignKey(d => d.MerchantId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_MerchantIpRanges_Merchants");
+            });
+
+            modelBuilder.Entity<Operation>(entity =>
+            {
+                entity.HasIndex(e => e.ExternalId)
+                    .HasName("IX_OperationId")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.ProcessingId)
+                    .HasName("FK_Operation_Processing");
+
+                entity.HasIndex(e => e.SessionId)
+                    .HasName("FK_Operation_Session");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Amount).HasColumnType("bigint(10)");
+
+                entity.Property(e => e.ExternalId)
+                    .IsRequired()
+                    .HasColumnType("char(15)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.InvolvedAmount).HasColumnType("bigint(10)");
+
+                entity.Property(e => e.OperationType).HasColumnType("int(11)");
+
+                entity.Property(e => e.ProcessingId).HasColumnType("int(11)");
+
+                entity.Property(e => e.SessionId).HasColumnType("int(11)");
+
+                entity.HasOne(d => d.Processing)
+                    .WithMany(p => p.Operation)
+                    .HasForeignKey(d => d.ProcessingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Operation_Processing");
+
+                entity.HasOne(d => d.Session)
+                    .WithMany(p => p.Operation)
+                    .HasForeignKey(d => d.SessionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Operation_Session");
+            });
+
+            modelBuilder.Entity<Processing>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.ProcessingName)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+            });
+
+            modelBuilder.Entity<Session>(entity =>
+            {
+                entity.HasIndex(e => e.ExternalId)
+                    .HasName("IX_SessionIs")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.MerchantId, e.OrderId })
+                    .HasName("IX_Merchant_OrderId")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Amount).HasColumnType("bigint(10)");
+
+                entity.Property(e => e.Currency)
+                    .IsRequired()
+                    .HasColumnType("char(3)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.ExternalId)
+                    .IsRequired()
+                    .HasColumnType("char(24)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.FormKey)
+                    .HasColumnType("varchar(16)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.FormLanguage)
+                    .IsRequired()
+                    .HasColumnType("char(3)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.MerchantId).HasColumnType("int(11)");
+
+                entity.Property(e => e.OrderDescription)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.OrderId)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.HasOne(d => d.Merchant)
+                    .WithMany(p => p.Session)
+                    .HasForeignKey(d => d.MerchantId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Session_Merchant");
             });
 
             OnModelCreatingPartial(modelBuilder);
