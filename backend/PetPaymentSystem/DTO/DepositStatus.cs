@@ -8,6 +8,6 @@
 
         Success = 2,
 
-        Declines = 3,
+        Declined = 3,
     }
 }

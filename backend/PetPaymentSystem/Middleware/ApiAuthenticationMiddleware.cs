@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PetPaymentSystem.Constants;
 using PetPaymentSystem.Helpers;
 using PetPaymentSystem.Helpers.IpSet;
-using PetPaymentSystem.Models.Generated;
+using PetPaymentSystem.Services;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using PetPaymentSystem.Cachers;
 
 namespace PetPaymentSystem.Middleware
 {
@@ -32,9 +30,9 @@ namespace PetPaymentSystem.Middleware
             _env = env;
         }
 
-        public async Task InvokeAsync(HttpContext context, PaymentSystemContext dbContext)
+        public async Task InvokeAsync(HttpContext context, MerchantManagerService merchantManager)
         {
-            if (Check(context, dbContext))
+            if (Check(context, merchantManager))
             {
                 await _next.Invoke(context);
             }
@@ -45,7 +43,7 @@ namespace PetPaymentSystem.Middleware
             }
         }
 
-        private bool Check(HttpContext context, PaymentSystemContext dbContext)
+        private bool Check(HttpContext context, MerchantManagerService merchantManager)
         {
             if (!context.Request.Path.Value.StartsWith("/api/")) return true;
 
@@ -57,9 +55,8 @@ namespace PetPaymentSystem.Middleware
             }
 
             var token = context.Request.Headers[GlobalConstants.AuthHeader][0];
-            var merchant = MerchantCache.GetMerchant(token, dbContext);
-            context.Items.Add("Merchant", merchant );
-            //var merchant = dbContext.Merchant.Include(i => i.MerchantIpRange).FirstOrDefault(x => x.Token == token);
+            var merchant = merchantManager.GetMerchant(token);
+            context.Items.Add("Merchant", merchant);
             if (merchant == null)
             {
                 _logger.LogWarning("No merchant with token");

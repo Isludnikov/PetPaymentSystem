@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PetPaymentSystem.DTO.V1;
-using System;
-using System.Linq;
 using PetPaymentSystem.DTO;
+using PetPaymentSystem.DTO.V1;
 using PetPaymentSystem.Helpers;
 using PetPaymentSystem.Models.Generated;
+using PetPaymentSystem.Services;
+using System;
 
 namespace PetPaymentSystem.Controllers
 {
@@ -13,31 +13,25 @@ namespace PetPaymentSystem.Controllers
     public class DebitController : ControllerBase
     {
         [HttpPost]
-        public CommonApiResponse Debit(DebitRequest request, [FromServices] PaymentSystemContext dbContext)
+        public CommonApiResponse Debit(DebitRequest request, [FromServices] SessionManagerService sessionManager)
         {
-            //todo
-            //check merchant orderId uniqueness
             var merchant = (Merchant)HttpContext.Items["Merchant"];
-            if (dbContext.Session.Any(x => x.MerchantId == merchant.Id && x.OrderId == request.OrderId))
-            {
-                return new CommonApiResponse { Error = new ApiError { Code = "01", Message = "Duplicated OrderId" } };
-            }
 
-            //start session
-            var session = new Session
+            var sessionCreateResponse = sessionManager.Create(merchant, new SessionCreateRequest
             {
                 Amount = request.Amount,
                 Currency = request.Currency,
-                FormKey = null,
-                FormLanguage = "RUS",
-                MerchantId = merchant.Id,
                 OrderDescription = request.OrderDescription,
                 OrderId = request.OrderId,
-                ExternalId = IdHelper.GetSessionId()
-            };
+            });
 
-            dbContext.Session.Add(session);
-            dbContext.SaveChanges();
+            if (sessionCreateResponse.Session == null || sessionCreateResponse.InnerError != null)
+                return new CommonApiResponse
+                {
+                    Error = new ApiError(sessionCreateResponse.InnerError)
+                };
+
+            
             //select processing
 
             //start operation

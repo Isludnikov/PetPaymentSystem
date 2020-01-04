@@ -8,6 +8,10 @@ using PetPaymentSystem.Middleware;
 using PetPaymentSystem.Models.Generated;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using System;
+using Microsoft.AspNetCore.Mvc;
+using PetPaymentSystem.Filter;
+using PetPaymentSystem.Helpers;
+using PetPaymentSystem.Services;
 
 namespace PetPaymentSystem
 {
@@ -27,12 +31,25 @@ namespace PetPaymentSystem
                 .UseMySql(Configuration.GetConnectionString("MySql"), mySqlOptions => mySqlOptions
                     .ServerVersion(new ServerVersion(new Version(8, 0, 18)))
                 ));
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                options.JsonSerializerOptions.PropertyNamingPolicy = null;
-                options.JsonSerializerOptions.IgnoreNullValues = true;
-            });
+            services
+                .AddControllers(options =>
+                    options.Filters.Add(
+                        new HttpResponseExceptionFilter())
+                    )
+                .ConfigureApiBehaviorOptions(options =>
+                    {
+                        options.InvalidModelStateResponseFactory = context => context.HttpContext.Request.Path.Value.StartsWith("/api") 
+                            ? new BadRequestObjectResult(ModelValidationHelper.Validate(context.ModelState)) 
+                            : new BadRequestObjectResult(context.ModelState);
+                    })
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                });
+            services.AddScoped<MerchantManagerService>();
+            services.AddScoped<SessionManagerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

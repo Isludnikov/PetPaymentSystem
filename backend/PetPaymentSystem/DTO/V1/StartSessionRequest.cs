@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PetPaymentSystem.Models;
 using PetPaymentSystem.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace PetPaymentSystem.DTO.V1
 {

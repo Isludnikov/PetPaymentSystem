@@ -21,7 +21,7 @@ namespace PetPaymentSystem.Helpers
 
         public static string MaskHeader(string header)
         {
-            return Mask(header, 6, 6);
+            return Mask(header, 6, 6, false);
         }
 
         private static string Mask(string str, int start, int end, bool preserveLength = true)
