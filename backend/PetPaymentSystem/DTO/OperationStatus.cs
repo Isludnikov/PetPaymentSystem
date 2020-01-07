@@ -1,6 +1,6 @@
 ﻿namespace PetPaymentSystem.DTO
 {
-    public enum DepositStatus
+    public enum OperationStatus
     {
         Created = 0,
 
@@ -9,5 +9,9 @@
         Success = 2,
 
         Declined = 3,
+
+        Redirected = 4,
+
+        AdditionalAuth = 5,
     }
 }

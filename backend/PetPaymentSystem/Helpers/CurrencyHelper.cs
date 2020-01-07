@@ -3,7 +3,7 @@ using PetPaymentSystem.Models;
 
 namespace PetPaymentSystem.Helpers
 {
-    public class CurrencyHelper
+    public static class CurrencyHelper
     {
         public static IEnumerable<Currency> GetCurrencies()
         {

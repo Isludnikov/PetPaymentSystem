@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80018
 File Encoding         : 65001
 
-Date: 2019-12-28 19:29:48
+Date: 2020-01-07 19:02:47
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -85,12 +85,15 @@ DROP TABLE IF EXISTS `Processing`;
 CREATE TABLE `Processing` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `ProcessingName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `LibraryName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `Namespace` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of Processing
 -- ----------------------------
+INSERT INTO `Processing` VALUES ('1', 'Test', 'TestProcessing.dll', 'TestProcessing.TestProcessing');
 
 -- ----------------------------
 -- Table structure for Session
@@ -110,12 +113,34 @@ CREATE TABLE `Session` (
   UNIQUE KEY `IX_SessionIs` (`ExternalId`) USING BTREE,
   UNIQUE KEY `IX_Merchant_OrderId` (`MerchantId`,`OrderId`) USING BTREE,
   CONSTRAINT `FK_Session_Merchant` FOREIGN KEY (`MerchantId`) REFERENCES `Merchant` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of Session
 -- ----------------------------
-INSERT INTO `Session` VALUES ('2', 'KPH7aVDEY0y5ugIykLN4rQ==', '212321', '1', '100', 'EUR', null, null, 'RUS');
-INSERT INTO `Session` VALUES ('3', '9Qc3EA10G0K3RsHJ4sQaGQ==', '212322', '1', '100', 'EUR', null, null, 'RUS');
-INSERT INTO `Session` VALUES ('4', 'xG9r9aC/9E+iXqbKeRn2hA==', '212323', '1', '100', 'EUR', null, null, 'RUS');
+
+-- ----------------------------
+-- Table structure for Terminal
+-- ----------------------------
+DROP TABLE IF EXISTS `Terminal`;
+CREATE TABLE `Terminal` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessingId` int(11) NOT NULL,
+  `Priority` int(11) NOT NULL DEFAULT '0',
+  `MerchantId` int(11) NOT NULL,
+  `Rule` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `FinalRule` tinyint(1) NOT NULL DEFAULT '0',
+  `NextOnError` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Id`),
+  KEY `FK_Terminal_Merchant` (`MerchantId`),
+  KEY `FK_Terminal_Processing` (`ProcessingId`),
+  CONSTRAINT `FK_Terminal_Merchant` FOREIGN KEY (`MerchantId`) REFERENCES `Merchant` (`Id`) ON DELETE RESTRICT,
+  CONSTRAINT `FK_Terminal_Processing` FOREIGN KEY (`ProcessingId`) REFERENCES `Processing` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ----------------------------
+-- Records of Terminal
+-- ----------------------------
+INSERT INTO `Terminal` VALUES ('1', 'TestTerminal', '1', '0', '1', null, '1', '0');
 SET FOREIGN_KEY_CHECKS=1;

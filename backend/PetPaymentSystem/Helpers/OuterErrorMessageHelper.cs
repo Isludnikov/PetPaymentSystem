@@ -18,6 +18,9 @@ namespace PetPaymentSystem.Helpers
                 case InnerError.ValidationError:
                     message = "Model validation error";
                     break;
+                case InnerError.SessionNotFound:
+                    message = "Session not found";
+                    break;
             }
 
             return message;

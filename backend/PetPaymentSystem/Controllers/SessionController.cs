@@ -33,5 +33,19 @@ namespace PetPaymentSystem.Controllers
                 Error = new ApiError(sessionCreateResponse.InnerError),
             };
         }
+
+        public CommonApiResponse Get([FromBody] GetSessionRequest request, [FromServices] SessionManagerService sessionManager)
+        {
+            var merchant = (Merchant)HttpContext.Items["Merchant"];
+
+            var sessionGetResponse = sessionManager.Get(merchant, request.SessionId);
+            if (sessionGetResponse.Session != null && sessionGetResponse.InnerError == null)
+                return new GetSessionResponse { SessionId = sessionGetResponse.Session.ExternalId, Amount = sessionGetResponse.Session.Amount, Currency = sessionGetResponse.Session.Currency};
+
+            return new CommonApiResponse
+            {
+                Error = new ApiError(sessionGetResponse.InnerError),
+            };
+        }
     }
 }

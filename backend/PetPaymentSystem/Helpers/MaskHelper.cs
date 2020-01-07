@@ -7,15 +7,15 @@ namespace PetPaymentSystem.Helpers
     {
         private const int DefaultLength = 3;
         private const char DefaultChar = '*';
-        private const string PanRegex = "(\"pan\"\\s?:\\s?\"\\d{6})(\\d{3,})(\\d{4}\")";
-        private const string CvvRegex = "(\"cvv\"\\s?:\\s?\")(\\d{3,})(\")";
-        private static Regex panRegex = new Regex(PanRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static Regex cvvRegex = new Regex(CvvRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private const string PanPattern = "(\"pan\"\\s?:\\s?\"\\d{6})(\\d{3,})(\\d{4}\")";
+        private const string CvvPattern = "(\"cvv\"\\s?:\\s?\")(\\d{3,})(\")";
+        private static readonly Regex PanRegex = new Regex(PanPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex CvvRegex = new Regex(CvvPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
         public static string MaskApiRequest(string request)
         {
             var result = request;
-            result = panRegex.Replace(result, "$1***$3");
-            result = cvvRegex.Replace(result, "$1***$3");
+            result = PanRegex.Replace(result, "$1***$3");
+            result = CvvRegex.Replace(result, "$1***$3");
             return result;
         }
 

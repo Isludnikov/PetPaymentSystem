@@ -1,0 +1,14 @@
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\nlog.config
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\appsettings.Development.json
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\appsettings.json
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\Processings\TestProcessing\obj\project.assets.json
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\Processings\TestProcessing\obj\TestProcessing.csproj.nuget.dgspec.json
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\Properties\launchSettings.json
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\PetPaymentSystem.exe
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\TestProcessing.deps.json
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\TestProcessing.dll
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\TestProcessing.pdb
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing\obj\Debug\netcoreapp3.1\TestProcessing.csprojAssemblyReference.cache
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing\obj\Debug\netcoreapp3.1\TestProcessing.csproj.CopyComplete
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing\obj\Debug\netcoreapp3.1\TestProcessing.dll
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing\obj\Debug\netcoreapp3.1\TestProcessing.pdb

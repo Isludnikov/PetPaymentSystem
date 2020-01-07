@@ -6,6 +6,10 @@ namespace PetPaymentSystem.Models.Generated
 {
     public partial class PaymentSystemContext : DbContext
     {
+        public PaymentSystemContext()
+        {
+        }
+
         public PaymentSystemContext(DbContextOptions<PaymentSystemContext> options)
             : base(options)
         {
@@ -16,9 +20,15 @@ namespace PetPaymentSystem.Models.Generated
         public virtual DbSet<Operation> Operation { get; set; }
         public virtual DbSet<Processing> Processing { get; set; }
         public virtual DbSet<Session> Session { get; set; }
+        public virtual DbSet<Terminal> Terminal { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseMySql("server=192.168.33.10;database=PaymentSystem;user=username;password=password;treattinyasboolean=true", x => x.ServerVersion("8.0.18-mysql"));
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -123,6 +133,18 @@ namespace PetPaymentSystem.Models.Generated
             {
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
+                entity.Property(e => e.LibraryName)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.Namespace)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
                 entity.Property(e => e.ProcessingName)
                     .IsRequired()
                     .HasColumnType("varchar(255)")
@@ -185,6 +207,46 @@ namespace PetPaymentSystem.Models.Generated
                     .HasForeignKey(d => d.MerchantId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Session_Merchant");
+            });
+
+            modelBuilder.Entity<Terminal>(entity =>
+            {
+                entity.HasIndex(e => e.MerchantId)
+                    .HasName("FK_Terminal_Merchant");
+
+                entity.HasIndex(e => e.ProcessingId)
+                    .HasName("FK_Terminal_Processing");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.MerchantId).HasColumnType("int(11)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.Priority).HasColumnType("int(11)");
+
+                entity.Property(e => e.ProcessingId).HasColumnType("int(11)");
+
+                entity.Property(e => e.Rule)
+                    .HasColumnType("varchar(1024)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.HasOne(d => d.Merchant)
+                    .WithMany(p => p.Terminal)
+                    .HasForeignKey(d => d.MerchantId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Terminal_Merchant");
+
+                entity.HasOne(d => d.Processing)
+                    .WithMany(p => p.Terminal)
+                    .HasForeignKey(d => d.ProcessingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Terminal_Processing");
             });
 
             OnModelCreatingPartial(modelBuilder);

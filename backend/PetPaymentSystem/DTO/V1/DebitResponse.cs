@@ -4,6 +4,6 @@
     {
         public string OrderId{ get; set; }
 
-        public DepositStatus Status{ get; set; }
+        public OperationStatus Status{ get; set; }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PetPaymentSystem.Models.Generated;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using PetPaymentSystem.Models.Generated;
 
-namespace PetPaymentSystem.Cachers
+namespace PetPaymentSystem.Cache
 {
     public static class MerchantCache
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PetPaymentSystem.Helpers
 {
-    public class LanguageHelper
+    public static class LanguageHelper
     {
         public static IEnumerable<Language> GetLanguages()
         {

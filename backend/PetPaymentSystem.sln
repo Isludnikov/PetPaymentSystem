@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetPaymentSystem", "PetPaymentSystem\PetPaymentSystem.csproj", "{B1D1F77F-0611-495B-9482-0DCCFEB4BE99}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Processings", "Processings", "{5434D9A9-B33F-40AA-B94F-5171DA61AA0F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProcessing", "PetPaymentSystem\Processings\TestProcessing\TestProcessing.csproj", "{68BCEE66-7075-4FDD-848A-BBC731A7D79A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{B1D1F77F-0611-495B-9482-0DCCFEB4BE99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1D1F77F-0611-495B-9482-0DCCFEB4BE99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1D1F77F-0611-495B-9482-0DCCFEB4BE99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68BCEE66-7075-4FDD-848A-BBC731A7D79A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68BCEE66-7075-4FDD-848A-BBC731A7D79A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68BCEE66-7075-4FDD-848A-BBC731A7D79A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68BCEE66-7075-4FDD-848A-BBC731A7D79A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{68BCEE66-7075-4FDD-848A-BBC731A7D79A} = {5434D9A9-B33F-40AA-B94F-5171DA61AA0F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71267B2F-7E20-4F67-B229-6ED547F9D581}

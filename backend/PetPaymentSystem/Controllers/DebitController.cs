@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetPaymentSystem.DTO;
 using PetPaymentSystem.DTO.V1;
-using PetPaymentSystem.Helpers;
 using PetPaymentSystem.Models.Generated;
 using PetPaymentSystem.Services;
-using System;
 
 namespace PetPaymentSystem.Controllers
 {
@@ -31,7 +29,7 @@ namespace PetPaymentSystem.Controllers
                     Error = new ApiError(sessionCreateResponse.InnerError)
                 };
 
-            
+
             //select processing
 
             //start operation
@@ -39,7 +37,7 @@ namespace PetPaymentSystem.Controllers
             //call processing
             //write result to operation
             //return response
-            return new DebitResponse { OrderId = Guid.NewGuid().ToString(), Status = DepositStatus.Success };
+            return new DebitResponse { OrderId = sessionCreateResponse.Session.OrderId, Status = OperationStatus.Success };
         }
     }
 }

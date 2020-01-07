@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PetPaymentSystem.Helpers
 {
-    public class HttpContextHelper
+    public static class HttpContextHelper
     {
         public static string GetBody(HttpRequest request)//https://devblogs.microsoft.com/aspnet/re-reading-asp-net-core-request-bodies-with-enablebuffering/
         {

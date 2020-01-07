@@ -4,6 +4,7 @@
     {
         CommonError = 0,
         SessionAlreadyExists = 1,
-        ValidationError,
+        ValidationError = 2,
+        SessionNotFound = 3,
     }
 }

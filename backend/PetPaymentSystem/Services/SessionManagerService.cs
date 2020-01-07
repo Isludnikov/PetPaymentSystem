@@ -54,6 +54,11 @@ namespace PetPaymentSystem.Services
             }
         }
 
+        public SessionCreateResponse Get(Merchant merchant, string sessionId)
+        {
+            var session =  _dbContext.Session.FirstOrDefault(x => x.ExternalId == sessionId && x.MerchantId == merchant.Id);
+            return session != null ? new SessionCreateResponse {Session = session} : new SessionCreateResponse {InnerError = InnerError.SessionNotFound};
+        }
         private SessionCreateResponse CreateFailResponse(InnerError innerError = InnerError.SessionAlreadyExists)
         {
             return new SessionCreateResponse { InnerError = innerError };

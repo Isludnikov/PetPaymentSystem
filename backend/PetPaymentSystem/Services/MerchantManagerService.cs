@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using PetPaymentSystem.Cachers;
+using PetPaymentSystem.Cache;
 using PetPaymentSystem.Models.Generated;
 
 namespace PetPaymentSystem.Services
