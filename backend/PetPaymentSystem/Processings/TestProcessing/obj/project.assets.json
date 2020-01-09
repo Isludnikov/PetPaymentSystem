@@ -787,15 +787,6 @@
           "lib/netstandard2.0/Pomelo.JsonObject.dll": {}
         }
       },
-      "RestSharp/106.6.10": {
-        "type": "package",
-        "compile": {
-          "lib/netstandard2.0/RestSharp.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/RestSharp.dll": {}
-        }
-      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
         "type": "package",
         "runtimeTargets": {
@@ -2088,8 +2079,7 @@
           "Microsoft.Extensions.Logging.Debug": "3.1.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "3.1.0",
           "NLog.Web.AspNetCore": "4.9.0",
-          "Pomelo.EntityFrameworkCore.MySql": "3.1.0",
-          "RestSharp": "106.6.10"
+          "Pomelo.EntityFrameworkCore.MySql": "3.1.0"
         },
         "compile": {
           "bin/placeholder/PetPaymentSystem.dll": {}
@@ -3384,21 +3374,6 @@
         "lib/netstandard2.0/Pomelo.JsonObject.dll",
         "pomelo.jsonobject.2.2.1.nupkg.sha512",
         "pomelo.jsonobject.nuspec"
-      ]
-    },
-    "RestSharp/106.6.10": {
-      "sha512": "x1FM32hjnVOIn+DKtCs2Y4Q2DCUE5KW08NUXUd4GjgKjE+5PE0F6e9XfUg7nILo05M0TA/HRkRD/SeQ8+duOUA==",
-      "type": "package",
-      "path": "restsharp/106.6.10",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net452/RestSharp.dll",
-        "lib/net452/RestSharp.xml",
-        "lib/netstandard2.0/RestSharp.dll",
-        "lib/netstandard2.0/RestSharp.xml",
-        "restsharp.106.6.10.nupkg.sha512",
-        "restsharp.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {

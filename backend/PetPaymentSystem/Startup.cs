@@ -9,6 +9,7 @@ using PetPaymentSystem.Models.Generated;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using System;
 using Microsoft.AspNetCore.Mvc;
+using PetPaymentSystem.Factories;
 using PetPaymentSystem.Filter;
 using PetPaymentSystem.Helpers;
 using PetPaymentSystem.Services;
@@ -50,6 +51,9 @@ namespace PetPaymentSystem
                 });
             services.AddScoped<MerchantManagerService>();
             services.AddScoped<SessionManagerService>();
+            services.AddScoped<OperationManagerService>();
+            services.AddScoped<ProcessingFactory>();
+            services.AddScoped<TerminalSelectorService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,7 +66,6 @@ namespace PetPaymentSystem
             app.UseRouting();
             app.UseMiddleware<ApiLoggingMiddleware>();
             app.UseMiddleware<ApiAuthenticationMiddleware>();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

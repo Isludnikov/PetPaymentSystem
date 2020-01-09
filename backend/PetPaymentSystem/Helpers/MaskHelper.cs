@@ -24,6 +24,10 @@ namespace PetPaymentSystem.Helpers
             return Mask(header, 6, 6, false);
         }
 
+        public static string MaskPan(string pan) => Mask(pan, 6, 4);
+
+        public static string MaskCvv(string cvv) => Mask(cvv, 0, 0);
+
         private static string Mask(string str, int start, int end, bool preserveLength = true)
         {
             if (str == null) return string.Empty;

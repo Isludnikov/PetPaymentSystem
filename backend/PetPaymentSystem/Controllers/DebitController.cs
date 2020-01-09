@@ -11,7 +11,7 @@ namespace PetPaymentSystem.Controllers
     public class DebitController : ControllerBase
     {
         [HttpPost]
-        public CommonApiResponse Debit(DebitRequest request, [FromServices] SessionManagerService sessionManager)
+        public CommonApiResponse Debit(DebitRequest request, [FromServices] SessionManagerService sessionManager, [FromServices] OperationManagerService operationManager)
         {
             var merchant = (Merchant)HttpContext.Items["Merchant"];
 
@@ -29,15 +29,9 @@ namespace PetPaymentSystem.Controllers
                     Error = new ApiError(sessionCreateResponse.InnerError)
                 };
 
+            var result = operationManager.Proceed(merchant, sessionCreateResponse.Session, OperationType.Deposit);
 
-            //select processing
-
-            //start operation
-
-            //call processing
-            //write result to operation
-            //return response
-            return new DebitResponse { OrderId = sessionCreateResponse.Session.OrderId, Status = OperationStatus.Success };
+            return new DebitResponse { Status = result.OperationStatus };
         }
     }
 }

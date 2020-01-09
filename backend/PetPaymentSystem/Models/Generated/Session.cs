@@ -19,6 +19,7 @@ namespace PetPaymentSystem.Models.Generated
         public string OrderDescription { get; set; }
         public string FormKey { get; set; }
         public string FormLanguage { get; set; }
+        public DateTime ExpireTime { get; set; }
 
         public virtual Merchant Merchant { get; set; }
         public virtual ICollection<Operation> Operation { get; set; }

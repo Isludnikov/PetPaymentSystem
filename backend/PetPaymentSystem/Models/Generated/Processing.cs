@@ -7,7 +7,6 @@ namespace PetPaymentSystem.Models.Generated
     {
         public Processing()
         {
-            Operation = new HashSet<Operation>();
             Terminal = new HashSet<Terminal>();
         }
 
@@ -16,7 +15,6 @@ namespace PetPaymentSystem.Models.Generated
         public string LibraryName { get; set; }
         public string Namespace { get; set; }
 
-        public virtual ICollection<Operation> Operation { get; set; }
         public virtual ICollection<Terminal> Terminal { get; set; }
     }
 }

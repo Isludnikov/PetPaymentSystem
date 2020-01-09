@@ -7,5 +7,7 @@ namespace PetPaymentSystem.Library
         IProcessingResponse Debit(Session session, Operation operation);
 
         IProcessingResponse Credit(Session session, Operation operation);
+
+        IProcessingProperties Properties { get; }
     }
 }

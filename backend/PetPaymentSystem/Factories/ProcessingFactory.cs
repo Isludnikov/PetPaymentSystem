@@ -1,9 +1,9 @@
-﻿using System;
-using PetPaymentSystem.Library;
+﻿using PetPaymentSystem.Library;
+using PetPaymentSystem.Models.Generated;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using PetPaymentSystem.Models.Generated;
 
 namespace PetPaymentSystem.Factories
 {
@@ -12,18 +12,18 @@ namespace PetPaymentSystem.Factories
         private static readonly object LockObject = new object();
         private static readonly Dictionary<int, IProcessing> Cache = new Dictionary<int, IProcessing>();
 
-        public IProcessing GetProcessing(int id, PaymentSystemContext dbContext)
+        public IProcessing GetProcessing(Terminal terminal, PaymentSystemContext dbContext)
         {
             lock (LockObject)
             {
-                if (!Cache.ContainsKey(id))
+                if (!Cache.ContainsKey(terminal.Id))
                 {
-                    var processingDb = dbContext.Processing.FirstOrDefault(x => x.Id == id);
-                    if (processingDb == null) throw new Exception($"No processing with id-[{id}]");
-                    Cache[id] = Create(processingDb);
+                    var processingDb = dbContext.Processing.FirstOrDefault(x => x.Id == terminal.Id);
+                    if (processingDb == null) throw new Exception($"No processing with id-[{terminal.Id}]");
+                    Cache[terminal.Id] = Create(processingDb, terminal);
 
                 }
-                return Cache[id];
+                return Cache[terminal.Id];
             }
         }
         public void Clear()
@@ -34,12 +34,14 @@ namespace PetPaymentSystem.Factories
             }
         }
 
-        private IProcessing Create(Processing processing)
+        private IProcessing Create(Processing processing, Terminal terminal)
         {
-            var dll = Assembly.LoadFile($".\\{processing.LibraryName}");
+            var pathToAssembly = System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+            var filename = $"{pathToAssembly}\\{processing.LibraryName}";
+            var dll = Assembly.LoadFile(filename);
 
             var theType = dll.GetType(processing.Namespace);
-            var instance = Activator.CreateInstance(theType);
+            var instance = Activator.CreateInstance(theType, terminal);
 
             return (IProcessing) instance;
         }

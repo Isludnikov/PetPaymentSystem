@@ -12,6 +12,7 @@ namespace PetPaymentSystem.Services
     {
         private readonly PaymentSystemContext _dbContext;
         private readonly ILogger<SessionManagerService> _logger;
+        private const int SessionMinutesToExpire = 30;
 
         public SessionManagerService(PaymentSystemContext dbContext, ILogger<SessionManagerService> logger)
         {
@@ -35,7 +36,8 @@ namespace PetPaymentSystem.Services
                     MerchantId = merchant.Id,
                     OrderDescription = request.OrderDescription,
                     OrderId = request.OrderId,
-                    ExternalId = IdHelper.GetSessionId()
+                    ExternalId = IdHelper.GetSessionId(),
+                    ExpireTime = DateTime.Now.AddMinutes(SessionMinutesToExpire),
                 };
 
                 _dbContext.Session.Add(session);

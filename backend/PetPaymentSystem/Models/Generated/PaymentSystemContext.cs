@@ -6,10 +6,6 @@ namespace PetPaymentSystem.Models.Generated
 {
     public partial class PaymentSystemContext : DbContext
     {
-        public PaymentSystemContext()
-        {
-        }
-
         public PaymentSystemContext(DbContextOptions<PaymentSystemContext> options)
             : base(options)
         {
@@ -24,11 +20,6 @@ namespace PetPaymentSystem.Models.Generated
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=192.168.33.10;database=PaymentSystem;user=username;password=password;treattinyasboolean=true", x => x.ServerVersion("8.0.18-mysql"));
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -92,15 +83,17 @@ namespace PetPaymentSystem.Models.Generated
                     .HasName("IX_OperationId")
                     .IsUnique();
 
-                entity.HasIndex(e => e.ProcessingId)
-                    .HasName("FK_Operation_Processing");
-
                 entity.HasIndex(e => e.SessionId)
                     .HasName("FK_Operation_Session");
+
+                entity.HasIndex(e => e.TerminalId)
+                    .HasName("FK_Operation_Terminal");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.Amount).HasColumnType("bigint(10)");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ExternalId)
                     .IsRequired()
@@ -112,21 +105,28 @@ namespace PetPaymentSystem.Models.Generated
 
                 entity.Property(e => e.OperationType).HasColumnType("int(11)");
 
-                entity.Property(e => e.ProcessingId).HasColumnType("int(11)");
+                entity.Property(e => e.ProcessingOrderId)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
 
                 entity.Property(e => e.SessionId).HasColumnType("int(11)");
 
-                entity.HasOne(d => d.Processing)
-                    .WithMany(p => p.Operation)
-                    .HasForeignKey(d => d.ProcessingId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Operation_Processing");
+                entity.Property(e => e.Status).HasColumnType("int(11)");
+
+                entity.Property(e => e.TerminalId).HasColumnType("int(11)");
 
                 entity.HasOne(d => d.Session)
                     .WithMany(p => p.Operation)
                     .HasForeignKey(d => d.SessionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Operation_Session");
+
+                entity.HasOne(d => d.Terminal)
+                    .WithMany(p => p.Operation)
+                    .HasForeignKey(d => d.TerminalId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Operation_Terminal");
             });
 
             modelBuilder.Entity<Processing>(entity =>
@@ -171,6 +171,8 @@ namespace PetPaymentSystem.Models.Generated
                     .HasColumnType("char(3)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.ExpireTime).HasColumnType("datetime");
 
                 entity.Property(e => e.ExternalId)
                     .IsRequired()
@@ -219,10 +221,25 @@ namespace PetPaymentSystem.Models.Generated
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
+                entity.Property(e => e.AccessToken)
+                    .HasColumnType("varchar(2048)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.Login)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
                 entity.Property(e => e.MerchantId).HasColumnType("int(11)");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.Password)
                     .HasColumnType("varchar(255)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_unicode_ci");
