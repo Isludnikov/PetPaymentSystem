@@ -6,6 +6,7 @@ namespace PetPaymentSystem.Models.Generated
 {
     public partial class PaymentSystemContext : DbContext
     {
+
         public PaymentSystemContext(DbContextOptions<PaymentSystemContext> options)
             : base(options)
         {
@@ -95,6 +96,10 @@ namespace PetPaymentSystem.Models.Generated
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.Property(e => e.ExpireMonth).HasColumnType("int(11)");
+
+                entity.Property(e => e.ExpireYear).HasColumnType("int(11)");
+
                 entity.Property(e => e.ExternalId)
                     .IsRequired()
                     .HasColumnType("char(15)")
@@ -103,7 +108,23 @@ namespace PetPaymentSystem.Models.Generated
 
                 entity.Property(e => e.InvolvedAmount).HasColumnType("bigint(10)");
 
-                entity.Property(e => e.OperationType).HasColumnType("int(11)");
+                entity.Property(e => e.MaskedPan)
+                    .IsRequired()
+                    .HasColumnType("varchar(19)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.OperationStatus)
+                    .IsRequired()
+                    .HasColumnType("varchar(11)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.OperationType)
+                    .IsRequired()
+                    .HasColumnType("varchar(29)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
 
                 entity.Property(e => e.ProcessingOrderId)
                     .HasColumnType("varchar(255)")
@@ -111,8 +132,6 @@ namespace PetPaymentSystem.Models.Generated
                     .HasCollation("utf8_unicode_ci");
 
                 entity.Property(e => e.SessionId).HasColumnType("int(11)");
-
-                entity.Property(e => e.Status).HasColumnType("int(11)");
 
                 entity.Property(e => e.TerminalId).HasColumnType("int(11)");
 
@@ -201,6 +220,12 @@ namespace PetPaymentSystem.Models.Generated
                 entity.Property(e => e.OrderId)
                     .IsRequired()
                     .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.SessionType)
+                    .IsRequired()
+                    .HasColumnType("varchar(11)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_unicode_ci");
 

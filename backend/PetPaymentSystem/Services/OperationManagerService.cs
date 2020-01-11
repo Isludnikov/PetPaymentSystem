@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using PetPaymentSystem.DTO;
+using PetPaymentSystem.Exceptions;
 using PetPaymentSystem.Factories;
 using PetPaymentSystem.Helpers;
+using PetPaymentSystem.Library;
 using PetPaymentSystem.Models.Generated;
 
 namespace PetPaymentSystem.Services
@@ -13,75 +16,126 @@ namespace PetPaymentSystem.Services
         private readonly PaymentSystemContext _dbContext;
         private readonly ProcessingFactory _processingFactory;
         private readonly TerminalSelectorService _terminalSelector;
+        private readonly ILogger<OperationManagerService> _logger;
 
-        public OperationManagerService(PaymentSystemContext dbContext, ProcessingFactory processingFactory, TerminalSelectorService terminalSelector)
+        public OperationManagerService(PaymentSystemContext dbContext, ProcessingFactory processingFactory, TerminalSelectorService terminalSelector, ILogger<OperationManagerService> logger)
         {
             _dbContext = dbContext;
             _processingFactory = processingFactory;
             _terminalSelector = terminalSelector;
+            _logger = logger;
         }
 
-        public ProceedStatus Proceed(Merchant merchant, Session session, OperationType type, long amount = 0)
+        public ProceedStatus Deposit(Merchant merchant, Session session, PaymentData paymentData, long amount = 0)
+            => InnerSimpleOperation(merchant, session, paymentData, OperationType.Deposit, amount);
+
+        public ProceedStatus Credit(Merchant merchant, Session session, PaymentData paymentData, long amount = 0)
+            => InnerSimpleOperation(merchant, session, paymentData, OperationType.Credit, amount);
+
+        public ProceedStatus Hold(Merchant merchant, Session session, PaymentData paymentData, long amount = 0)
+            => InnerSimpleOperation(merchant, session, paymentData, OperationType.Hold, amount);
+
+        public ProceedStatus Charge(Merchant merchant, Session session, PaymentData paymentData, long amount = 0)
+            => InnerSimpleOperation(merchant, session, paymentData, OperationType.Charge, amount);
+
+        private ProceedStatus InnerSimpleOperation(Merchant merchant, Session session, PaymentData paymentData, OperationType operationType, long amount)
         {
-            var Amount = amount != 0 ? amount : session.Amount;
-            var operationList = _dbContext.Operation.OrderByDescending(x=>x.Id).Where(x => x.SessionId == session.Id).ToList();
+            var actualAmount = amount != 0 ? amount : session.Amount;
+            var operationList = _dbContext.Operation.OrderByDescending(x => x.Id).Where(x => x.SessionId == session.Id).ToList();
             if (operationList.Count == 0 && session.ExpireTime < DateTime.Now)
                 return new ProceedStatus { InnerError = InnerError.SessionExpired };
+            var lastOperation = operationList.OrderByDescending(x => x.Id)
+                .FirstOrDefault(x => x.OperationStatus == OperationStatus.Success.ToString());
+            CheckPossibility(session, operationList, operationType, actualAmount);
+            var terminal = _terminalSelector.Select(merchant, operationList, operationType, amount);
 
-            CheckPossibility(session, operationList, type, Amount);
-            var terminal = _terminalSelector.Select(merchant, operationList, type, amount);
-
-            var processing = _processingFactory.GetProcessing(terminal, _dbContext);
+            var processing = _processingFactory.GetProcessing(terminal.Id, _dbContext);
 
             var operation = new Operation
             {
                 SessionId = session.Id,
-                Status = (int)OperationStatus.Created,
+                OperationStatus = OperationStatus.Created.ToString(),
                 TerminalId = terminal.Id,
-                Amount = Amount,
+                Amount = actualAmount,
                 InvolvedAmount = 0,
                 ExternalId = IdHelper.GetOperationId(),
-                OperationType = (int)type,
-                CreateDate = DateTime.UtcNow
+                OperationType = operationType.ToString(),
+                CreateDate = DateTime.UtcNow,
+                ExpireMonth = paymentData?.ExpireMonth ?? lastOperation?.ExpireMonth,
+                ExpireYear = paymentData?.ExpireYear ?? lastOperation?.ExpireYear,
+                MaskedPan = paymentData != null ? MaskHelper.MaskPan(paymentData.Pan) : lastOperation?.MaskedPan
             };
             _dbContext.Operation.Add(operation);
             _dbContext.SaveChanges();
-
-            switch (type)
+            ProceedStatus response;
+            try
             {
-                case OperationType.Deposit:
+                IProcessingResponse processingResponse;
+                switch (operationType)
+                {
+                    case OperationType.Credit:
+                        if (!processing.Properties.AllowCredit) throw new OuterException(InnerError.OperationNotSupportedByProcessing);
+                        processingResponse = processing.Credit(session, operation, terminal, paymentData);
+                        break;
+                    case OperationType.Deposit:
+                        if (!processing.Properties.AllowDebit) throw new OuterException(InnerError.OperationNotSupportedByProcessing);
+                        processingResponse = processing.Debit(session, operation, terminal, paymentData);
+                        break;
+                    case OperationType.Hold:
+                        if (!processing.Properties.AllowHold) throw new OuterException(InnerError.OperationNotSupportedByProcessing);
+                        processingResponse = processing.Hold(session, operation, terminal, paymentData);
+                        break;
+                    case OperationType.Charge:
+                        if (!processing.Properties.AllowHold || actualAmount != session.Amount && !processing.Properties.AllowPartialCharge) throw new OuterException(InnerError.OperationNotSupportedByProcessing);
+                        processingResponse = processing.Charge(session, operation, terminal);
+                        break;
+                    default:
+                        throw new OuterException(InnerError.NotImplemented);
+                }
 
-                    var processingResponse = processing.Debit(session, operation);
-                    operation.ProcessingOrderId = processingResponse.ProcessingOrderId;
-                    operation.Status = (int)processingResponse.Status;
-                    switch (processingResponse.Status)
-                    {
-                        case OperationStatus.Success:
-                            operation.InvolvedAmount = operation.Amount;
-                            break;
-
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
+                operation.ProcessingOrderId = processingResponse.ProcessingOrderId;
+                operation.OperationStatus = processingResponse.Status.ToString();
+                AdditionalAuth auth = null;
+                switch (processingResponse.Status)
+                {
+                    case OperationStatus.Success:
+                        operation.InvolvedAmount = operation.Amount;
+                        break;
+                    case OperationStatus.AdditionalAuth:
+                        auth = processingResponse.AuthData;
+                        break;
+                }
+                response = new ProceedStatus { OperationStatus = Enum.Parse<OperationStatus>(operation.OperationStatus), AdditionalAuth = auth };
             }
-            _dbContext.SaveChanges();
-
-            var response = new ProceedStatus { OperationStatus = (OperationStatus)operation.Status };
-
+            catch (Exception exc)
+            {
+                _logger.LogError(exc.Message);
+                operation.OperationStatus = OperationStatus.Error.ToString();
+                response = new ProceedStatus { OperationStatus = OperationStatus.Error };
+            }
+            finally
+            {
+                _dbContext.SaveChanges();
+            }
             return response;
         }
-
-        private void CheckPossibility(Session session, IEnumerable<Operation> operations, OperationType type, long amount)
+        private void CheckPossibility(Session session, IList<Operation> operations, OperationType type, long amount)
         {
             switch (type)
             {
                 case OperationType.Deposit:
-                case OperationType.Hold:
-                    if (operations.Any(x=>x.Status == (int)OperationStatus.Success)) throw new Exception("");
+                    if (session.SessionType != SessionType.OneStep.ToString() || operations.Any(x => x.OperationStatus == OperationStatus.Success.ToString())) throw new OuterException(InnerError.PaymentAlreadyDone);
                     break;
-                //case OperationType.Charge
-
+                case OperationType.Hold:
+                    if (session.SessionType != SessionType.TwoStep.ToString() || operations.Any(x => x.OperationStatus == OperationStatus.Success.ToString())) throw new OuterException(InnerError.PaymentAlreadyDone);
+                    break;
+                case OperationType.Credit:
+                    if (session.SessionType != SessionType.Credit.ToString() || operations.Any(x => x.OperationStatus == OperationStatus.Success.ToString())) throw new OuterException(InnerError.PaymentAlreadyDone);
+                    break;
+                case OperationType.Charge:
+                    if (session.SessionType != SessionType.TwoStep.ToString() || operations.OrderByDescending(x => x.Id).First(x => x.OperationStatus == OperationStatus.Success.ToString()).Amount < amount || operations.OrderByDescending(x => x.Id).First(x => x.OperationStatus == OperationStatus.Success.ToString()).OperationType != OperationType.Hold.ToString()) throw new OuterException(InnerError.PaymentAlreadyDone);
+                    break;
+                    //todo
             }
         }
     }

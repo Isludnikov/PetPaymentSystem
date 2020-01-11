@@ -17,12 +17,12 @@ namespace PetPaymentSystem.Services
         }
         public Merchant GetMerchant(string token) =>
             _useCache
-                ? MerchantCache.GetMerchant(token, _dbContext)
+                ? MerchantCache.Get(token, _dbContext)
                 : _dbContext.Merchant.Include(i=>i.MerchantIpRange).FirstOrDefault(x => x.Token == token);
 
         public Merchant GetMerchant(int id) =>
             _useCache
-                ? MerchantCache.GetMerchant(id, _dbContext)
+                ? MerchantCache.Get(id, _dbContext)
                 : _dbContext.Merchant.Include(i=>i.MerchantIpRange).FirstOrDefault(x => x.Id == id);
     }
 }

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80018
 File Encoding         : 65001
 
-Date: 2020-01-09 18:59:47
+Date: 2020-01-11 18:41:11
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -65,22 +65,24 @@ CREATE TABLE `Operation` (
   `TerminalId` int(11) NOT NULL,
   `Amount` bigint(10) NOT NULL,
   `InvolvedAmount` bigint(10) NOT NULL,
-  `OperationType` int(11) NOT NULL,
-  `Status` int(11) NOT NULL,
+  `OperationType` varchar(29) COLLATE utf8_unicode_ci NOT NULL,
+  `OperationStatus` varchar(11) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `ProcessingOrderId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `CreateDate` datetime NOT NULL,
+  `MaskedPan` varchar(19) COLLATE utf8_unicode_ci NOT NULL,
+  `ExpireMonth` int(11) DEFAULT NULL,
+  `ExpireYear` int(11) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `IX_OperationId` (`ExternalId`) USING BTREE,
   KEY `FK_Operation_Session` (`SessionId`),
   KEY `FK_Operation_Terminal` (`TerminalId`),
   CONSTRAINT `FK_Operation_Session` FOREIGN KEY (`SessionId`) REFERENCES `Session` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_Operation_Terminal` FOREIGN KEY (`TerminalId`) REFERENCES `Terminal` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of Operation
 -- ----------------------------
-INSERT INTO `Operation` VALUES ('2', '157858910400000', '26', '1', '10000', '10000', '0', '2', '57f3fc58-7e8a-4174-ae4e-3a063eede8291', '2020-01-09 16:58:24');
 
 -- ----------------------------
 -- Table structure for Processing
@@ -114,24 +116,16 @@ CREATE TABLE `Session` (
   `FormKey` varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `FormLanguage` char(3) COLLATE utf8_unicode_ci NOT NULL,
   `ExpireTime` datetime NOT NULL,
+  `SessionType` varchar(11) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `IX_SessionIs` (`ExternalId`) USING BTREE,
   UNIQUE KEY `IX_Merchant_OrderId` (`MerchantId`,`OrderId`) USING BTREE,
   CONSTRAINT `FK_Session_Merchant` FOREIGN KEY (`MerchantId`) REFERENCES `Merchant` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of Session
 -- ----------------------------
-INSERT INTO `Session` VALUES ('18', 'GaEw0+wb4ky20Mxv/zKH6w==', '212329', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-08 14:47:09');
-INSERT INTO `Session` VALUES ('19', 'spRUbakrsUiwAPP2w2mU7A==', '212330', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-08 17:05:13');
-INSERT INTO `Session` VALUES ('20', 'd1hIGgPoZ0SQtyktt9tM9Q==', '212331', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-08 17:11:13');
-INSERT INTO `Session` VALUES ('21', '2m+JxAbI8EGBUaZVN1bVfw==', '212332', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-08 17:14:24');
-INSERT INTO `Session` VALUES ('22', 'wYFsF9V7O0mVoKarOYaDmw==', '212333', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-08 17:17:01');
-INSERT INTO `Session` VALUES ('23', 'ca/oVVv48kurcGYcsRUZ7Q==', '212334', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-08 17:21:51');
-INSERT INTO `Session` VALUES ('24', 'YF/Yv+/tzEOt/yn8UlKQjw==', '212335', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-08 17:31:29');
-INSERT INTO `Session` VALUES ('25', 'dODRc4kdxE+jcIGFHUR4JQ==', '212337', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-09 19:25:07');
-INSERT INTO `Session` VALUES ('26', 'pqHDCB/TAUidPwXpLhR9mQ==', '212338', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-09 19:28:24');
 
 -- ----------------------------
 -- Table structure for Terminal

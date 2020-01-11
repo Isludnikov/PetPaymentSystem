@@ -13,5 +13,7 @@
         Redirected = 4,
 
         AdditionalAuth = 5,
+
+        Error = 6
     }
 }

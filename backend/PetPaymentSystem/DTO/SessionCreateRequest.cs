@@ -8,5 +8,6 @@
         public string FormLanguage { get; set; } = "RUS";
         public string OrderDescription { get; set; }
         public string OrderId { get; set; }
+        public SessionType SessionType { get; set; }
     }
 }

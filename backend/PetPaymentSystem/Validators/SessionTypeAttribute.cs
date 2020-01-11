@@ -1,12 +1,13 @@
-﻿using System;
+﻿using PetPaymentSystem.DTO;
 using System.ComponentModel.DataAnnotations;
+
 namespace PetPaymentSystem.Validators
 {
-    public class CardMonthAttribute : ValidationAttribute
+    public class SessionTypeAttribute: ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            return value is int i && i <= 12 && i > 0 ? ValidationResult.Success : new ValidationResult($"Invalid ExpireMonth-[{value}]");
+            return value is SessionType ? ValidationResult.Success : new ValidationResult($"Invalid SessionType-[{value}]");
         }
     }
 }

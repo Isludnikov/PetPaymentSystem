@@ -20,7 +20,7 @@ namespace PetPaymentSystem.Helpers
             }
             return new CommonApiResponse
             {
-                Error = response,
+                Error = response
             };
         }
     }

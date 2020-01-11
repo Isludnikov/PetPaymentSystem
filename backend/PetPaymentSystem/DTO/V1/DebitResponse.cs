@@ -1,9 +1,13 @@
-﻿namespace PetPaymentSystem.DTO.V1
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace PetPaymentSystem.DTO.V1
 {
     public class DebitResponse:CommonApiResponse
     {
-        public string OrderId{ get; set; }
-
+        [JsonConverter(typeof(StringEnumConverter))]
         public OperationStatus Status{ get; set; }
+
+        public AdditionalAuth Auth { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace PetPaymentSystem.Helpers
             return new List<Language>
             {
                 new Language {Iso639_3 = "ENG"},
-                new Language {Iso639_3 = "RUS"},
+                new Language {Iso639_3 = "RUS"}
 
             };
         }

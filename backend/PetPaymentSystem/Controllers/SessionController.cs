@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetPaymentSystem.DTO;
 using PetPaymentSystem.DTO.V1;
+using PetPaymentSystem.Exceptions;
 using PetPaymentSystem.Models.Generated;
 using PetPaymentSystem.Services;
 
@@ -15,7 +16,7 @@ namespace PetPaymentSystem.Controllers
         {
             var merchant = (Merchant)HttpContext.Items["Merchant"];
 
-            var sessionCreateResponse = sessionManager.Create(merchant, new SessionCreateRequest
+            var session = sessionManager.Create(merchant, new SessionCreateRequest
             {
                 Amount = request.Amount,
                 Currency = request.Currency,
@@ -23,29 +24,22 @@ namespace PetPaymentSystem.Controllers
                 FormLanguage = request.FormLanguage,
                 OrderDescription = request.OrderDescription,
                 OrderId = request.OrderId,
+                SessionType = request.SessionType
             });
 
-            if (sessionCreateResponse.Session != null && sessionCreateResponse.InnerError == null)
-                return new StartSessionResponse { SessionId = sessionCreateResponse.Session.ExternalId };
-
-            return new CommonApiResponse
-            {
-                Error = new ApiError(sessionCreateResponse.InnerError),
-            };
+            return new StartSessionResponse { SessionId = session.ExternalId };
         }
 
         public CommonApiResponse Get([FromBody] GetSessionRequest request, [FromServices] SessionManagerService sessionManager)
         {
             var merchant = (Merchant)HttpContext.Items["Merchant"];
 
-            var sessionGetResponse = sessionManager.Get(merchant, request.SessionId);
-            if (sessionGetResponse.Session != null && sessionGetResponse.InnerError == null)
-                return new GetSessionResponse { SessionId = sessionGetResponse.Session.ExternalId, Amount = sessionGetResponse.Session.Amount, Currency = sessionGetResponse.Session.Currency};
+            var session = sessionManager.Get(request.SessionId);
 
-            return new CommonApiResponse
-            {
-                Error = new ApiError(sessionGetResponse.InnerError),
-            };
+            if (session == null || session.MerchantId != merchant.Id)
+                throw new OuterException(InnerError.SessionNotFound);
+
+            return new GetSessionResponse { SessionId = session.ExternalId, Amount = session.Amount, Currency = session.Currency };
         }
     }
 }

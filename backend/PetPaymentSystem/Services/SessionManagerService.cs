@@ -5,6 +5,7 @@ using PetPaymentSystem.Helpers;
 using PetPaymentSystem.Models.Generated;
 using System;
 using System.Linq;
+using PetPaymentSystem.Exceptions;
 
 namespace PetPaymentSystem.Services
 {
@@ -20,13 +21,13 @@ namespace PetPaymentSystem.Services
             _logger = logger;
         }
 
-        public SessionCreateResponse Create(Merchant merchant, SessionCreateRequest request)
+        public Session Create(Merchant merchant, SessionCreateRequest request)
         {
             try
             {
                 if (_dbContext.Session.Any(x => x.MerchantId == merchant.Id && x.OrderId == request.OrderId))
-                    return CreateFailResponse();
-                    
+                    throw new OuterException(InnerError.SessionAlreadyExists);
+
                 var session = new Session
                 {
                     Amount = request.Amount,
@@ -38,15 +39,16 @@ namespace PetPaymentSystem.Services
                     OrderId = request.OrderId,
                     ExternalId = IdHelper.GetSessionId(),
                     ExpireTime = DateTime.Now.AddMinutes(SessionMinutesToExpire),
+                    SessionType = request.SessionType.ToString()
                 };
 
                 _dbContext.Session.Add(session);
                 _dbContext.SaveChanges();
-                return new SessionCreateResponse {Session = session};
+                return session;
             }
             catch (DbUpdateException)
             {
-                return CreateFailResponse();
+                throw new OuterException(InnerError.SessionAlreadyExists);
             }
             catch (Exception ex)
             {
@@ -56,14 +58,18 @@ namespace PetPaymentSystem.Services
             }
         }
 
-        public SessionCreateResponse Get(Merchant merchant, string sessionId)
+        public Session Get(string sessionId)
         {
-            var session =  _dbContext.Session.FirstOrDefault(x => x.ExternalId == sessionId && x.MerchantId == merchant.Id);
-            return session != null ? new SessionCreateResponse {Session = session} : new SessionCreateResponse {InnerError = InnerError.SessionNotFound};
+            var session = _dbContext.Session.FirstOrDefault(x => x.ExternalId == sessionId);
+            if (session == null) throw new OuterException(InnerError.SessionNotFound);
+            return session;
         }
-        private SessionCreateResponse CreateFailResponse(InnerError innerError = InnerError.SessionAlreadyExists)
+        public Session GetByOrderId(Merchant merchant, string orderId)
         {
-            return new SessionCreateResponse { InnerError = innerError };
+            var session = _dbContext.Session.FirstOrDefault(x => x.OrderId == orderId && x.MerchantId == merchant.Id);
+            if (session == null) throw new OuterException(InnerError.SessionNotFound);
+            return session;
         }
+
     }
 }

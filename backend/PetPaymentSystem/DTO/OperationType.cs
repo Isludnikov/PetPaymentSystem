@@ -8,6 +8,6 @@
         Charge,
         Reverse,
         Refund,
-        Chargeback,
+        Chargeback
     }
 }

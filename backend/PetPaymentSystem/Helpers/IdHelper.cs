@@ -7,9 +7,8 @@ namespace PetPaymentSystem.Helpers
         private static readonly object Locker = new object();
         private static int _counter;
         public static string GetSessionId()
-        {
-            return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-        }
+            => ToUrlSafe(Convert.ToBase64String(Guid.NewGuid().ToByteArray()));
+
         public static string GetOperationId()
         {
             lock (Locker)
@@ -21,5 +20,11 @@ namespace PetPaymentSystem.Helpers
                 return id;
             }
         }
+
+        private static string ToUrlSafe(string str) 
+            => str.Replace('+','.').Replace('/','_').Replace('=','-');
+
+        private static string FromUrlSafe(string str)
+            => str.Replace('.','+').Replace('_','/').Replace('-','=');
     }
 }

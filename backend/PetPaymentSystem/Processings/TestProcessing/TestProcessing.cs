@@ -7,24 +7,31 @@ namespace TestProcessing
 {
     public class TestProcessing : IProcessing
     {
-        private readonly Terminal _terminal;
-        public TestProcessing(Terminal terminal)
-        {
-            _terminal = terminal;
-        }
-        public IProcessingResponse Debit(Session session, Operation operation)
+        public IProcessingResponse Debit(Session session, Operation operation, Terminal terminal, PaymentData paymentData)
         {
             return new ProcessingResponse
             { ProcessingOrderId = Guid.NewGuid().ToString(), Status = OperationStatus.Success };
         }
 
-        public IProcessingResponse Credit(Session session, Operation operation)
+        public IProcessingResponse Credit(Session session, Operation operation, Terminal terminal, PaymentData paymentData)
         {
             return new ProcessingResponse
             { ProcessingOrderId = Guid.NewGuid().ToString(), Status = OperationStatus.Success };
+        }
+
+        public IProcessingResponse Hold(Session session, Operation operation, Terminal terminal, PaymentData paymentData)
+        {
+            return new ProcessingResponse
+                { ProcessingOrderId = Guid.NewGuid().ToString(), Status = OperationStatus.Success };
+        }
+
+        public IProcessingResponse Charge(Session session, Operation operation, Terminal terminal)
+        {
+            return new ProcessingResponse
+                { ProcessingOrderId = Guid.NewGuid().ToString(), Status = OperationStatus.Success };
         }
 
         public IProcessingProperties Properties
-            => new ProcessingProperties(true, true, true, true, true, true);
+            => new ProcessingProperties(true, true, false, true, false, false);
     }
 }

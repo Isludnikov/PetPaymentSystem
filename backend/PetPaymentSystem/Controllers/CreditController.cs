@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PetPaymentSystem.DTO;
 using PetPaymentSystem.DTO.V1;
 using PetPaymentSystem.Models.Generated;
@@ -8,10 +9,10 @@ namespace PetPaymentSystem.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class DebitController : ControllerBase
+    public class CreditController : ControllerBase
     {
         [HttpPost]
-        public CommonApiResponse Debit(DebitRequest request, [FromServices] SessionManagerService sessionManager, [FromServices] OperationManagerService operationManager)
+        public CommonApiResponse Credit(CreditRequest request, [FromServices] SessionManagerService sessionManager, [FromServices] OperationManagerService operationManager)
         {
             var merchant = (Merchant)HttpContext.Items["Merchant"];
 
@@ -21,14 +22,14 @@ namespace PetPaymentSystem.Controllers
                 Currency = request.Currency,
                 OrderDescription = request.OrderDescription,
                 OrderId = request.OrderId,
-                SessionType = SessionType.OneStep
+                SessionType = SessionType.Credit
             });
 
-            var paymentData = new PaymentData(request.Pan, request.Year, request.Month, request.Cvv);
+            var paymentData = new PaymentData(request.Pan, request.Year, request.Month);
 
-            var result = operationManager.Deposit(merchant, session, paymentData);
+            var result = operationManager.Credit(merchant, session, paymentData);
 
-            return new DebitResponse { Status = result.OperationStatus };
+            return new CreditResponse { Status = result.OperationStatus };
         }
     }
 }

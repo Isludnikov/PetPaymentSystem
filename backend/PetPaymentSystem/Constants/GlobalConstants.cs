@@ -2,7 +2,8 @@
 {
     public static class GlobalConstants
     {
-        public static readonly string AuthHeader = "auth";
-        public static readonly string SignHeader = "sign";
+        public const string AuthHeader = "auth";
+        public const string SignHeader = "sign";
+        public const string KeyHeader = "key";
     }
 }

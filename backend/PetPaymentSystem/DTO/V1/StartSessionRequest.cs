@@ -17,5 +17,7 @@ namespace PetPaymentSystem.DTO.V1
         public string FormKey { get; set; }
         [Language]
         public string FormLanguage { get; set; }
+        [ValidEnumValue]
+        public SessionType SessionType { get; set; }
     }
 }

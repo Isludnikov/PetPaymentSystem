@@ -8,6 +8,9 @@
         SessionNotFound = 3,
         SessionExpired = 4,
         TerminalNotConfigured = 5,
-        TerminalBlocked = 6
+        TerminalBlocked = 6,
+        NotImplemented = 7,
+        OperationNotSupportedByProcessing = 8,
+        PaymentAlreadyDone = 9
     }
 }

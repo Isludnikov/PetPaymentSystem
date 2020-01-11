@@ -8,6 +8,7 @@ using PetPaymentSystem.Middleware;
 using PetPaymentSystem.Models.Generated;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using PetPaymentSystem.Factories;
 using PetPaymentSystem.Filter;
@@ -48,6 +49,7 @@ namespace PetPaymentSystem
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     options.JsonSerializerOptions.PropertyNamingPolicy = null;
                     options.JsonSerializerOptions.IgnoreNullValues = true;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
             services.AddScoped<MerchantManagerService>();
             services.AddScoped<SessionManagerService>();
@@ -65,7 +67,9 @@ namespace PetPaymentSystem
             }
             app.UseRouting();
             app.UseMiddleware<ApiLoggingMiddleware>();
+            app.UseMiddleware<InternalApiLoggingMiddleware>();
             app.UseMiddleware<ApiAuthenticationMiddleware>();
+            app.UseMiddleware<InternalApiAuthenticationMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
