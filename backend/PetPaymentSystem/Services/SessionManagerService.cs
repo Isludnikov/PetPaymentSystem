@@ -38,8 +38,9 @@ namespace PetPaymentSystem.Services
                     OrderDescription = request.OrderDescription,
                     OrderId = request.OrderId,
                     ExternalId = IdHelper.GetSessionId(),
-                    ExpireTime = DateTime.Now.AddMinutes(SessionMinutesToExpire),
-                    SessionType = request.SessionType.ToString()
+                    ExpireTime = DateTime.UtcNow.AddMinutes(SessionMinutesToExpire),
+                    SessionType = request.SessionType,
+                    TryCount = 0
                 };
 
                 _dbContext.Session.Add(session);
@@ -60,7 +61,7 @@ namespace PetPaymentSystem.Services
 
         public Session Get(string sessionId)
         {
-            var session = _dbContext.Session.FirstOrDefault(x => x.ExternalId == sessionId);
+            var session = _dbContext.Session.Include(x=>x.Operation).FirstOrDefault(x => x.ExternalId == sessionId);
             if (session == null) throw new OuterException(InnerError.SessionNotFound);
             return session;
         }

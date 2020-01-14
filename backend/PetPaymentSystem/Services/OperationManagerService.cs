@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using PetPaymentSystem.Constants;
 using PetPaymentSystem.DTO;
 using PetPaymentSystem.Exceptions;
 using PetPaymentSystem.Factories;
@@ -26,6 +27,17 @@ namespace PetPaymentSystem.Services
             _logger = logger;
         }
 
+        public PaymentPossibility CheckPaymentPossibility(Session session)
+        {
+            if (session.Operation.Count == 0 && session.ExpireTime <= DateTime.UtcNow)
+                return PaymentPossibility.SessionExpired;
+            if (session.Operation.Any(x => x.OperationStatus == OperationStatus.Success))
+                return PaymentPossibility.AlreadyPaid;
+            if (session.TryCount >= GlobalConstants.MaxPaymentTriesCount)
+                return PaymentPossibility.LimitExceeded;
+            return PaymentPossibility.PaymentAllowed;
+
+        }
         public ProceedStatus Deposit(Merchant merchant, Session session, PaymentData paymentData, long amount = 0)
             => InnerSimpleOperation(merchant, session, paymentData, OperationType.Deposit, amount);
 
@@ -45,7 +57,7 @@ namespace PetPaymentSystem.Services
             if (operationList.Count == 0 && session.ExpireTime < DateTime.Now)
                 return new ProceedStatus { InnerError = InnerError.SessionExpired };
             var lastOperation = operationList.OrderByDescending(x => x.Id)
-                .FirstOrDefault(x => x.OperationStatus == OperationStatus.Success.ToString());
+                .FirstOrDefault(x => x.OperationStatus == OperationStatus.Success);
             CheckPossibility(session, operationList, operationType, actualAmount);
             var terminal = _terminalSelector.Select(merchant, operationList, operationType, amount);
 
@@ -54,12 +66,12 @@ namespace PetPaymentSystem.Services
             var operation = new Operation
             {
                 SessionId = session.Id,
-                OperationStatus = OperationStatus.Created.ToString(),
+                OperationStatus = OperationStatus.Created,
                 TerminalId = terminal.Id,
                 Amount = actualAmount,
                 InvolvedAmount = 0,
                 ExternalId = IdHelper.GetOperationId(),
-                OperationType = operationType.ToString(),
+                OperationType = operationType,
                 CreateDate = DateTime.UtcNow,
                 ExpireMonth = paymentData?.ExpireMonth ?? lastOperation?.ExpireMonth,
                 ExpireYear = paymentData?.ExpireYear ?? lastOperation?.ExpireYear,
@@ -94,7 +106,7 @@ namespace PetPaymentSystem.Services
                 }
 
                 operation.ProcessingOrderId = processingResponse.ProcessingOrderId;
-                operation.OperationStatus = processingResponse.Status.ToString();
+                operation.OperationStatus = processingResponse.Status;
                 AdditionalAuth auth = null;
                 switch (processingResponse.Status)
                 {
@@ -105,12 +117,12 @@ namespace PetPaymentSystem.Services
                         auth = processingResponse.AuthData;
                         break;
                 }
-                response = new ProceedStatus { OperationStatus = Enum.Parse<OperationStatus>(operation.OperationStatus), AdditionalAuth = auth };
+                response = new ProceedStatus { OperationStatus = operation.OperationStatus, AdditionalAuth = auth };
             }
             catch (Exception exc)
             {
                 _logger.LogError(exc.Message);
-                operation.OperationStatus = OperationStatus.Error.ToString();
+                operation.OperationStatus = OperationStatus.Error;
                 response = new ProceedStatus { OperationStatus = OperationStatus.Error };
             }
             finally
@@ -124,16 +136,16 @@ namespace PetPaymentSystem.Services
             switch (type)
             {
                 case OperationType.Deposit:
-                    if (session.SessionType != SessionType.OneStep.ToString() || operations.Any(x => x.OperationStatus == OperationStatus.Success.ToString())) throw new OuterException(InnerError.PaymentAlreadyDone);
+                    if (session.SessionType != SessionType.OneStep || operations.Any(x => x.OperationStatus == OperationStatus.Success)) throw new OuterException(InnerError.PaymentAlreadyDone);
                     break;
                 case OperationType.Hold:
-                    if (session.SessionType != SessionType.TwoStep.ToString() || operations.Any(x => x.OperationStatus == OperationStatus.Success.ToString())) throw new OuterException(InnerError.PaymentAlreadyDone);
+                    if (session.SessionType != SessionType.TwoStep || operations.Any(x => x.OperationStatus == OperationStatus.Success)) throw new OuterException(InnerError.PaymentAlreadyDone);
                     break;
                 case OperationType.Credit:
-                    if (session.SessionType != SessionType.Credit.ToString() || operations.Any(x => x.OperationStatus == OperationStatus.Success.ToString())) throw new OuterException(InnerError.PaymentAlreadyDone);
+                    if (session.SessionType != SessionType.Credit || operations.Any(x => x.OperationStatus == OperationStatus.Success)) throw new OuterException(InnerError.PaymentAlreadyDone);
                     break;
                 case OperationType.Charge:
-                    if (session.SessionType != SessionType.TwoStep.ToString() || operations.OrderByDescending(x => x.Id).First(x => x.OperationStatus == OperationStatus.Success.ToString()).Amount < amount || operations.OrderByDescending(x => x.Id).First(x => x.OperationStatus == OperationStatus.Success.ToString()).OperationType != OperationType.Hold.ToString()) throw new OuterException(InnerError.PaymentAlreadyDone);
+                    if (session.SessionType != SessionType.TwoStep || operations.OrderByDescending(x => x.Id).First(x => x.OperationStatus == OperationStatus.Success).Amount < amount || operations.OrderByDescending(x => x.Id).First(x => x.OperationStatus == OperationStatus.Success).OperationType != OperationType.Hold) throw new OuterException(InnerError.PaymentAlreadyDone);
                     break;
                     //todo
             }

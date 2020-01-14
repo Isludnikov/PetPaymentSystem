@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80018
 File Encoding         : 65001
 
-Date: 2020-01-11 18:41:11
+Date: 2020-01-14 19:11:13
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,6 +26,7 @@ CREATE TABLE `Merchant` (
   `ShortName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `FullName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Active` tinyint(1) NOT NULL DEFAULT '0',
+  `MaxTriesToPay` int(11) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `IX_token` (`Token`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -33,7 +34,7 @@ CREATE TABLE `Merchant` (
 -- ----------------------------
 -- Records of Merchant
 -- ----------------------------
-INSERT INTO `Merchant` VALUES ('1', 'TestMerchantWithLongToken', 'eVwboZvWzSfFejy5bkwqrXaTBWesBBUXcAQE1wSwl3c1WiyTKdmzsP5iacDnmQ2mxnu63S3gJxcL1UIrSgJ8M8kYunhNpApINamQRlXqN4FPLm7tkPg7GbwAy3MlZhXF4r5zfGgCxvq0YgHvme0vB7obtPC5sw6hsYd4erqf690pU5yWmTmCPOIu5cZ2ctl4Do3rYOOdISZjh05dQeUiWFcYdXAvUOtJMgSlRF8uJwp22Ut4LV9WbAoiVZWraw7', 'Test', 'Merchant for test purposes', '1');
+INSERT INTO `Merchant` VALUES ('1', 'TestMerchantWithLongToken', 'eVwboZvWzSfFejy5bkwqrXaTBWesBBUXcAQE1wSwl3c1WiyTKdmzsP5iacDnmQ2mxnu63S3gJxcL1UIrSgJ8M8kYunhNpApINamQRlXqN4FPLm7tkPg7GbwAy3MlZhXF4r5zfGgCxvq0YgHvme0vB7obtPC5sw6hsYd4erqf690pU5yWmTmCPOIu5cZ2ctl4Do3rYOOdISZjh05dQeUiWFcYdXAvUOtJMgSlRF8uJwp22Ut4LV9WbAoiVZWraw7', 'Test', 'Merchant for test purposes', '1', null);
 
 -- ----------------------------
 -- Table structure for MerchantIpRange
@@ -78,7 +79,7 @@ CREATE TABLE `Operation` (
   KEY `FK_Operation_Terminal` (`TerminalId`),
   CONSTRAINT `FK_Operation_Session` FOREIGN KEY (`SessionId`) REFERENCES `Session` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_Operation_Terminal` FOREIGN KEY (`TerminalId`) REFERENCES `Terminal` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of Operation
@@ -117,15 +118,19 @@ CREATE TABLE `Session` (
   `FormLanguage` char(3) COLLATE utf8_unicode_ci NOT NULL,
   `ExpireTime` datetime NOT NULL,
   `SessionType` varchar(11) COLLATE utf8_unicode_ci NOT NULL,
+  `TryCount` int(11) NOT NULL,
+  `LastFormGenerationTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `IX_SessionIs` (`ExternalId`) USING BTREE,
   UNIQUE KEY `IX_Merchant_OrderId` (`MerchantId`,`OrderId`) USING BTREE,
   CONSTRAINT `FK_Session_Merchant` FOREIGN KEY (`MerchantId`) REFERENCES `Merchant` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of Session
 -- ----------------------------
+INSERT INTO `Session` VALUES ('40', '9rkfl_MOO0mniSfVKpoPHg--', '212341', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-14 17:26:32', 'OneStep', '0', null);
+INSERT INTO `Session` VALUES ('41', 'WBJfR.tqXEW3Ne9azxWovA--', '212342', '1', '10000', 'EUR', null, null, 'RUS', '2020-01-14 15:29:39', 'OneStep', '1', '2020-01-14 15:00:49');
 
 -- ----------------------------
 -- Table structure for Terminal

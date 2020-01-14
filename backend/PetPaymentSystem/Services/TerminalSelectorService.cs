@@ -23,7 +23,7 @@ namespace PetPaymentSystem.Services
             var terminals = _useCache ? TerminalCache.All(_dbContext) : _dbContext.Terminal.Where(x => x.MerchantId == merchant.Id && x.Active).ToList();
             if (!terminals.Any())
                 throw new OuterException(InnerError.TerminalNotConfigured, $"No configured terminals for merchant id-[{merchant.Id}] name-[{merchant.ShortName}]");
-            var lastNotDeclinedOperation = operationList.OrderByDescending(x => x.Id).FirstOrDefault(x => x.OperationStatus != OperationStatus.Declined.ToString());
+            var lastNotDeclinedOperation = operationList.OrderByDescending(x => x.Id).FirstOrDefault(x => x.OperationStatus != OperationStatus.Declined);
             if (lastNotDeclinedOperation != null)
             {
                 var selectedTerminal = _useCache ? TerminalCache.Get(lastNotDeclinedOperation.TerminalId, _dbContext) : terminals.FirstOrDefault(x => x.Id == lastNotDeclinedOperation.TerminalId);

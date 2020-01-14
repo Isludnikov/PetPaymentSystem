@@ -55,7 +55,9 @@ namespace PetPaymentSystem
             services.AddScoped<SessionManagerService>();
             services.AddScoped<OperationManagerService>();
             services.AddScoped<ProcessingFactory>();
+            services.AddScoped<FormFactory>();
             services.AddScoped<TerminalSelectorService>();
+            services.AddScoped<FormManagerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

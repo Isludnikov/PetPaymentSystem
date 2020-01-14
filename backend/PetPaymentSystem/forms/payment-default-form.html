@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>Payment form</title>
+</head>
+<body>
+    <p>Please pay</p>
+    <form action="/api/v1/pay" method="post">
+        Card number: <input type="text" name="pan"><br>
+        Expire month: <input type="text" name="month"><br>
+        Expire year: <input type="text" name="year"><br>
+        CVV: <input type="text" name="cvv"><br>
+        Code: <input type="hidden" name="code" value="[[code]]"><br>
+        ExternalId: <input type="hidden" name="externalid" value="[[sessionid]]"><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

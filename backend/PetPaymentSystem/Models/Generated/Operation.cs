@@ -11,8 +11,6 @@ namespace PetPaymentSystem.Models.Generated
         public int TerminalId { get; set; }
         public long Amount { get; set; }
         public long InvolvedAmount { get; set; }
-        public string OperationType { get; set; }
-        public string OperationStatus { get; set; }
         public string ProcessingOrderId { get; set; }
         public DateTime CreateDate { get; set; }
         public string MaskedPan { get; set; }

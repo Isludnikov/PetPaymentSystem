@@ -6,7 +6,6 @@ namespace PetPaymentSystem.Models.Generated
 {
     public partial class PaymentSystemContext : DbContext
     {
-
         public PaymentSystemContext(DbContextOptions<PaymentSystemContext> options)
             : base(options)
         {
@@ -37,6 +36,8 @@ namespace PetPaymentSystem.Models.Generated
                     .HasColumnType("varchar(255)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.MaxTriesToPay).HasColumnType("int(11)");
 
                 entity.Property(e => e.ShortName)
                     .HasColumnType("varchar(255)")
@@ -210,6 +211,10 @@ namespace PetPaymentSystem.Models.Generated
                     .HasCharSet("utf8")
                     .HasCollation("utf8_unicode_ci");
 
+                entity.Property(e => e.LastFormGenerationTime)
+                    .HasColumnType("datetime")
+                    .ValueGeneratedOnAddOrUpdate();
+
                 entity.Property(e => e.MerchantId).HasColumnType("int(11)");
 
                 entity.Property(e => e.OrderDescription)
@@ -228,6 +233,8 @@ namespace PetPaymentSystem.Models.Generated
                     .HasColumnType("varchar(11)")
                     .HasCharSet("utf8")
                     .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.TryCount).HasColumnType("int(11)");
 
                 entity.HasOne(d => d.Merchant)
                     .WithMany(p => p.Session)

@@ -18,6 +18,7 @@ namespace PetPaymentSystem.Models.Generated
         public string ShortName { get; set; }
         public string FullName { get; set; }
         public bool Active { get; set; }
+        public int? MaxTriesToPay { get; set; }
 
         public virtual ICollection<MerchantIpRange> MerchantIpRange { get; set; }
         public virtual ICollection<Session> Session { get; set; }

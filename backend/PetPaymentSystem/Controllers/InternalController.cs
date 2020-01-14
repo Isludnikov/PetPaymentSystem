@@ -14,6 +14,7 @@ namespace PetPaymentSystem.Controllers
             MerchantCache.Clear();
             TerminalCache.Clear();
             ProcessingFactory.Clear();
+            FormFactory.Clear();
             return true;
         }
     }

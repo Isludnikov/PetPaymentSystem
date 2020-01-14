@@ -20,7 +20,8 @@ namespace PetPaymentSystem.Models.Generated
         public string FormKey { get; set; }
         public string FormLanguage { get; set; }
         public DateTime ExpireTime { get; set; }
-        public string SessionType { get; set; }
+        public int TryCount { get; set; }
+        public DateTime? LastFormGenerationTime { get; set; }
 
         public virtual Merchant Merchant { get; set; }
         public virtual ICollection<Operation> Operation { get; set; }

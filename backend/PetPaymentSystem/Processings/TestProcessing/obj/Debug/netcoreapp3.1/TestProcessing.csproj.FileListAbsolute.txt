@@ -10,3 +10,6 @@ D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing
 D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing\obj\Debug\netcoreapp3.1\TestProcessing.csproj.CopyComplete
 D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing\obj\Debug\netcoreapp3.1\TestProcessing.dll
 D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing\obj\Debug\netcoreapp3.1\TestProcessing.pdb
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\error-default-form.html
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\payment-default-form.html
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\success-default-form.html
