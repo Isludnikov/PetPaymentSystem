@@ -14,6 +14,7 @@ namespace PetPaymentSystem.Models.Generated
         public virtual DbSet<Merchant> Merchant { get; set; }
         public virtual DbSet<MerchantIpRange> MerchantIpRange { get; set; }
         public virtual DbSet<Operation> Operation { get; set; }
+        public virtual DbSet<Operation3ds> Operation3ds { get; set; }
         public virtual DbSet<Processing> Processing { get; set; }
         public virtual DbSet<Session> Session { get; set; }
         public virtual DbSet<Terminal> Terminal { get; set; }
@@ -147,6 +148,34 @@ namespace PetPaymentSystem.Models.Generated
                     .HasForeignKey(d => d.TerminalId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Operation_Terminal");
+            });
+
+            modelBuilder.Entity<Operation3ds>(entity =>
+            {
+                entity.HasIndex(e => e.OperationId)
+                    .HasName("FK_Operation_Id")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.LocalMd)
+                    .IsRequired()
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.Property(e => e.OperationId).HasColumnType("int(11)");
+
+                entity.Property(e => e.RemoteMd)
+                    .HasColumnType("varchar(255)")
+                    .HasCharSet("utf8")
+                    .HasCollation("utf8_unicode_ci");
+
+                entity.HasOne(d => d.Operation)
+                    .WithOne(p => p.Operation3ds)
+                    .HasForeignKey<Operation3ds>(d => d.OperationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Operation_Id");
             });
 
             modelBuilder.Entity<Processing>(entity =>

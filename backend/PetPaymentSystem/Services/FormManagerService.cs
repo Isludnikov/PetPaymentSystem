@@ -12,6 +12,19 @@ namespace PetPaymentSystem.Services
         {
             _formFactory = formFactory;
         }
+
+        public string Get3DsForm(AdditionalAuth auth, string key = "default")
+        {
+            var parameters = new Dictionary<string, string> { { "acs_url", auth.AcsUrl }, { "term_url", ""/*todo add actual home url*/}, { "md", auth.Md }, { "pa_req", auth.PaReq } };
+            var form = _formFactory.Get3DsForm(key);
+            return Proceed(form, parameters);
+        }
+        public string GetRedirectForm(string url, int timeout = 0, string key = "default")
+        {
+            var parameters = new Dictionary<string, string> { { "duration", timeout.ToString() }, { "url", url } };
+            var form = _formFactory.GetRedirectForm(key);
+            return Proceed(form, parameters);
+        }
         public string GetPendingForm(IDictionary<string, string> parameters = null, string key = "default")
         {
             var form = _formFactory.GetPendingForm(key);

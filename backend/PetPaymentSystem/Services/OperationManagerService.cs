@@ -18,13 +18,19 @@ namespace PetPaymentSystem.Services
         private readonly ProcessingFactory _processingFactory;
         private readonly TerminalSelectorService _terminalSelector;
         private readonly ILogger<OperationManagerService> _logger;
+        private readonly RemoteContainerService<PaymentData> _remoteContainer;
 
-        public OperationManagerService(PaymentSystemContext dbContext, ProcessingFactory processingFactory, TerminalSelectorService terminalSelector, ILogger<OperationManagerService> logger)
+        public OperationManagerService(PaymentSystemContext dbContext,
+            ProcessingFactory processingFactory,
+            TerminalSelectorService terminalSelector,
+            ILogger<OperationManagerService> logger,
+            RemoteContainerService<PaymentData> remoteContainer)
         {
             _dbContext = dbContext;
             _processingFactory = processingFactory;
             _terminalSelector = terminalSelector;
             _logger = logger;
+            _remoteContainer = remoteContainer;
         }
 
         public PaymentPossibility CheckPaymentPossibility(Session session)
@@ -37,6 +43,13 @@ namespace PetPaymentSystem.Services
                 return PaymentPossibility.LimitExceeded;
             return PaymentPossibility.PaymentAllowed;
 
+        }
+        public PaymentPossibility CheckPaymentPossibility(Session session, Operation operation)
+        {
+            var lastOperation = session.Operation.OrderByDescending(x => x.Id).First();
+            if (lastOperation.Id != operation.Id || lastOperation.OperationStatus != OperationStatus.AdditionalAuth)
+                return PaymentPossibility.PaymentExpired;
+            return PaymentPossibility.PaymentExpired;
         }
         public ProceedStatus Deposit(Merchant merchant, Session session, PaymentData paymentData, long amount = 0)
             => InnerSimpleOperation(merchant, session, paymentData, OperationType.Deposit, amount);
@@ -115,6 +128,14 @@ namespace PetPaymentSystem.Services
                         break;
                     case OperationStatus.AdditionalAuth:
                         auth = processingResponse.AuthData;
+                        var operation3ds = new Operation3ds
+                        {
+                            LocalMd = IdHelper.GetMd(),
+                            OperationId = operation.Id,
+                            RemoteMd = auth.Md
+                        };
+                        _dbContext.Add(operation3ds);
+                        _remoteContainer.Set(operation3ds.LocalMd, paymentData);
                         break;
                 }
                 response = new ProceedStatus { OperationStatus = operation.OperationStatus, AdditionalAuth = auth };

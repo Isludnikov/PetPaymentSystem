@@ -19,5 +19,6 @@ namespace PetPaymentSystem.Models.Generated
 
         public virtual Session Session { get; set; }
         public virtual Terminal Terminal { get; set; }
+        public virtual Operation3ds Operation3ds { get; set; }
     }
 }

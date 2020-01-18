@@ -13,3 +13,6 @@ D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\Processings\TestProcessing
 D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\error-default-form.html
 D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\payment-default-form.html
 D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\success-default-form.html
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\pending-default-form.html
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\3ds-default-form
+D:\home\sludnikovi\repos\PPS\backend\PetPaymentSystem\bin\Debug\netcoreapp3.1\forms\redirect-default-form.html

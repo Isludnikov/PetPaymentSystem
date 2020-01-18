@@ -1,0 +1,31 @@
+﻿<html>
+      <title>Redirection... </title>
+  </head>
+  <body>
+    <div class="wrapper wrapper-error without-header">
+      <div class="content">
+        <div class="title">Two-factor authentication</div>
+        <div class="text">In a few seconds you will be redirected to the bank's webpage for payment confirmation.</div>
+      </div>
+      <form name='form' action='[[acs_url]]' method='post'>
+        <input type='hidden' name='TermUrl' value='[[term_url]]'>
+        <input type='hidden' name='MD' value='[[threeDS_key]]'>
+        <input type='hidden' name='PaReq' value='[[pa_req]]'>
+      </form>
+	  <script type="text/javascript">
+    window.onload=function(){
+        var auto = setTimeout(function(){ autoRefresh(); }, 100);
+
+        function submitform(){
+          document.forms["form"].submit();
+        }
+
+        function autoRefresh(){
+           clearTimeout(auto);
+           auto = setTimeout(function(){ submitform(); autoRefresh(); }, 10000);
+        }
+    }
+</script>
+    </div>
+  </body>
+</html>

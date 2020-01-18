@@ -21,6 +21,8 @@ namespace PetPaymentSystem.Helpers
             }
         }
 
+        public static string GetMd() => new Guid().ToString();
+
         private static string ToUrlSafe(string str) 
             => str.Replace('+','.').Replace('/','_').Replace('=','-');
 

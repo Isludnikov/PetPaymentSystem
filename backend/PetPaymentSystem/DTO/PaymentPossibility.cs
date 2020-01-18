@@ -5,6 +5,7 @@
         SessionExpired,
         AlreadyPaid,
         LimitExceeded,
-        PaymentAllowed
+        PaymentAllowed,
+        PaymentExpired
     }
 }

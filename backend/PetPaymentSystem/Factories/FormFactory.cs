@@ -8,6 +8,8 @@ namespace PetPaymentSystem.Factories
     {
         private static readonly object LockObject = new object();
         private static readonly Dictionary<string, Form> Cache = new Dictionary<string, Form>();
+        public Form Get3DsForm(string key="default") => GetForm("3ds", key);
+        public Form GetRedirectForm(string key="default") => GetForm("redirect", key);
         public Form GetPendingForm(string key="default") => GetForm("pending", key);
         public Form GetSuccessForm(string key="default") => GetForm("success", key);
         public Form GetErrorForm(string key="default") => GetForm("error", key);
