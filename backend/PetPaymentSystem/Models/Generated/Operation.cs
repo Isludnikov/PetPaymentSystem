@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace PetPaymentSystem.Models.Generated
 {
@@ -16,7 +15,6 @@ namespace PetPaymentSystem.Models.Generated
         public string MaskedPan { get; set; }
         public int? ExpireMonth { get; set; }
         public int? ExpireYear { get; set; }
-
         public virtual Session Session { get; set; }
         public virtual Terminal Terminal { get; set; }
         public virtual Operation3ds Operation3ds { get; set; }

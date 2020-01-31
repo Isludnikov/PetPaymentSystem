@@ -9,7 +9,7 @@
       </div>
       <form name='form' action='[[acs_url]]' method='post'>
         <input type='hidden' name='TermUrl' value='[[term_url]]'>
-        <input type='hidden' name='MD' value='[[threeDS_key]]'>
+        <input type='hidden' name='MD' value='[[md]]'>
         <input type='hidden' name='PaReq' value='[[pa_req]]'>
       </form>
 	  <script type="text/javascript">

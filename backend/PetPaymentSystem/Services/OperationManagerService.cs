@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PetPaymentSystem.Constants;
 using PetPaymentSystem.DTO;
+using PetPaymentSystem.DTO.V1;
 using PetPaymentSystem.Exceptions;
 using PetPaymentSystem.Factories;
 using PetPaymentSystem.Helpers;
@@ -50,6 +52,50 @@ namespace PetPaymentSystem.Services
             if (lastOperation.Id != operation.Id || lastOperation.OperationStatus != OperationStatus.AdditionalAuth)
                 return PaymentPossibility.PaymentExpired;
             return PaymentPossibility.PaymentExpired;
+        }
+
+        public ProceedStatus Deposit(Session session, Operation3ds operation3ds, Submit3Ds submit3Ds)
+        {
+            return InnerAfter3ds(session, operation3ds, OperationType.Deposit, submit3Ds);
+        }
+        private ProceedStatus InnerAfter3ds(Session session, Operation3ds operation3ds, OperationType operationType, Submit3Ds submit3Ds)
+        {
+            var lastOperation = _dbContext.Operation.Include(x => x.Terminal).OrderByDescending(x => x.Id).First(x => x.SessionId == session.Id);
+            if (lastOperation.Id != operation3ds.OperationId)
+                return new ProceedStatus { OperationStatus = OperationStatus.Error };
+
+            var processing = _processingFactory.GetProcessing(lastOperation.TerminalId, _dbContext);
+
+            ProceedStatus response;
+            PaymentData paymentData = null;
+            if (operation3ds.SaveCredentials)
+                paymentData = _remoteContainer.Get(operation3ds.LocalMd);
+            try
+            {
+                var processingResponse = processing.Process3Ds(session, lastOperation, lastOperation.Terminal, paymentData, submit3Ds);
+
+                lastOperation.OperationStatus = processingResponse.Status;
+
+                switch (processingResponse.Status)
+                {
+                    case OperationStatus.Success:
+                        lastOperation.InvolvedAmount = lastOperation.Amount;
+                        break;
+
+                }
+                response = new ProceedStatus { OperationStatus = lastOperation.OperationStatus };
+            }
+            catch (Exception exc)
+            {
+                _logger.LogError(exc.Message);
+                lastOperation.OperationStatus = OperationStatus.Error;
+                response = new ProceedStatus { OperationStatus = OperationStatus.Error };
+            }
+            finally
+            {
+                _dbContext.SaveChanges();
+            }
+            return response;
         }
         public ProceedStatus Deposit(Merchant merchant, Session session, PaymentData paymentData, long amount = 0)
             => InnerSimpleOperation(merchant, session, paymentData, OperationType.Deposit, amount);
@@ -132,10 +178,13 @@ namespace PetPaymentSystem.Services
                         {
                             LocalMd = IdHelper.GetMd(),
                             OperationId = operation.Id,
-                            RemoteMd = auth.Md
+                            RemoteMd = auth.Md,
+                            SaveCredentials = processingResponse.SavePaymentData
                         };
                         _dbContext.Add(operation3ds);
-                        _remoteContainer.Set(operation3ds.LocalMd, paymentData);
+                        auth.Md = operation3ds.LocalMd;
+                        if (operation3ds.SaveCredentials)
+                            _remoteContainer.Set(operation3ds.LocalMd, paymentData);
                         break;
                 }
                 response = new ProceedStatus { OperationStatus = operation.OperationStatus, AdditionalAuth = auth };

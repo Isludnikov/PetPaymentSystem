@@ -6,7 +6,7 @@ namespace PetPaymentSystem.Helpers
     public static class MaskHelper
     {
         private const int DefaultLength = 3;
-        private const char DefaultChar = '*';
+     
         private const string PanPattern = "(\"pan\"\\s?:\\s?\"\\d{6})(\\d{3,})(\\d{4}\")";
         private const string CvvPattern = "(\"cvv\"\\s?:\\s?\")(\\d{3,})(\")";
         private static readonly Regex PanRegex = new Regex(PanPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -34,14 +34,6 @@ namespace PetPaymentSystem.Helpers
             if (str.Length <= start + end) return Replicate(start + end);
             return str.Substring(0, start) + Replicate(preserveLength ? str.Length - (end + start) : DefaultLength) + str.Substring(str.Length - end);
         }
-        private static string Replicate(int count)
-        {
-            var sb = new StringBuilder();
-            for (var i = 0; i < count; i++)
-            {
-                sb.Append(DefaultChar);
-            }
-            return sb.ToString();
-        }
+        private static string Replicate(int count) => new StringBuilder().Append('*',count).ToString();
     }
 }

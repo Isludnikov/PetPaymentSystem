@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80018
 File Encoding         : 65001
 
-Date: 2020-01-14 19:11:13
+Date: 2020-01-23 18:43:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -83,6 +83,25 @@ CREATE TABLE `Operation` (
 
 -- ----------------------------
 -- Records of Operation
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for Operation3ds
+-- ----------------------------
+DROP TABLE IF EXISTS `Operation3ds`;
+CREATE TABLE `Operation3ds` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `OperationId` int(11) NOT NULL,
+  `LocalMd` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `RemoteMd` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `SaveCredentials` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `FK_Operation_Id` (`OperationId`) USING BTREE,
+  CONSTRAINT `FK_Operation_Id` FOREIGN KEY (`OperationId`) REFERENCES `Operation` (`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ----------------------------
+-- Records of Operation3ds
 -- ----------------------------
 
 -- ----------------------------

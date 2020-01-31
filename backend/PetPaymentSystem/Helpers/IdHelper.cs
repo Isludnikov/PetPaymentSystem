@@ -21,12 +21,12 @@ namespace PetPaymentSystem.Helpers
             }
         }
 
-        public static string GetMd() => new Guid().ToString();
+        public static string GetMd() => "MD_" + new Guid();
 
-        private static string ToUrlSafe(string str) 
-            => str.Replace('+','.').Replace('/','_').Replace('=','-');
+        private static string ToUrlSafe(string str)
+            => str.Replace('+', '.').Replace('/', '_').Replace('=', '-');
 
         private static string FromUrlSafe(string str)
-            => str.Replace('.','+').Replace('_','/').Replace('-','=');
+            => str.Replace('.', '+').Replace('_', '/').Replace('-', '=');
     }
 }

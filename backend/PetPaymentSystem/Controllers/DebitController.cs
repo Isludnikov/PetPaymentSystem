@@ -28,7 +28,7 @@ namespace PetPaymentSystem.Controllers
 
             var result = operationManager.Deposit(merchant, session, paymentData);
 
-            return new DebitResponse { Status = result.OperationStatus };
+            return new DebitResponse { Status = result.OperationStatus , Auth = result.AdditionalAuth};
         }
     }
 }

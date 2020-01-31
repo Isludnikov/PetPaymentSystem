@@ -50,11 +50,10 @@ namespace PetPaymentSystem.Controllers
         }
         [HttpGet]
         [Produces("text/html")]
-        public ContentResult From3Ds([FromForm] Submit3Ds submit3Ds, [FromServices] SessionManagerService sessionManager,
+        public ContentResult From3Ds([FromForm] Submit3Ds submit3Ds,
             [FromServices] OperationManagerService operationManager,
             [FromServices] FormManagerService formManager,
-            [FromServices] PaymentSystemContext dbContext,
-            [FromServices] FormDataCryptService cryptService)
+            [FromServices] PaymentSystemContext dbContext)
         {
             var operation3ds = dbContext.Operation3ds.Include(x => x.Operation).FirstOrDefault(x => x.LocalMd == submit3Ds.MD);
             if (operation3ds == null || operation3ds.Operation.OperationStatus != OperationStatus.AdditionalAuth) return base.Content(formManager.GetErrorForm());
@@ -62,7 +61,7 @@ namespace PetPaymentSystem.Controllers
             var possibility = operationManager.CheckPaymentPossibility(session, operation3ds.Operation);
             if (possibility != PaymentPossibility.PaymentAllowed) return base.Content(formManager.GetErrorForm());
 
-            var result = operationManager.Deposit(session.Merchant, session, operation3ds);
+            var result = operationManager.Deposit(session, operation3ds, submit3Ds);
             switch (result.OperationStatus)
             {
                 case OperationStatus.Pending:

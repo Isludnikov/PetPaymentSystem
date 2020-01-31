@@ -9,6 +9,7 @@ namespace PetPaymentSystem.Models.Generated
         public int OperationId { get; set; }
         public string LocalMd { get; set; }
         public string RemoteMd { get; set; }
+        public bool SaveCredentials { get; set; }
 
         public virtual Operation Operation { get; set; }
     }

@@ -34,5 +34,13 @@ namespace PetPaymentSystem.Services
             // todo code for routing here
             return terminals.FirstOrDefault();
         }
+
+        public Terminal Select(int id)
+        {
+            var terminals = _useCache ? TerminalCache.All(_dbContext) : _dbContext.Terminal.Where(x => x.Id == id && x.Active).ToList();
+            var selectedTerminal = _useCache ? TerminalCache.Get(id, _dbContext) : terminals.FirstOrDefault(x => x.Id == id);
+
+            return selectedTerminal;
+        }
     }
 }

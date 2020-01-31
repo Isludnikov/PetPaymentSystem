@@ -8,5 +8,6 @@ namespace TestProcessing
         public OperationStatus Status { get; set; }
         public string ProcessingOrderId { get; set; }
         public AdditionalAuth AuthData { get; set; }
+        public bool SavePaymentData { get; set; }
     }
 }

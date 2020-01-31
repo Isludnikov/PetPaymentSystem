@@ -1,5 +1,6 @@
 ﻿using System;
 using PetPaymentSystem.DTO;
+using PetPaymentSystem.DTO.V1;
 using PetPaymentSystem.Library;
 using PetPaymentSystem.Models.Generated;
 
@@ -26,6 +27,12 @@ namespace TestProcessing
         }
 
         public IProcessingResponse Charge(Session session, Operation operation, Terminal terminal)
+        {
+            return new ProcessingResponse
+                { ProcessingOrderId = Guid.NewGuid().ToString(), Status = OperationStatus.Success };
+        }
+
+        public IProcessingResponse Process3Ds(Session session, Operation operation, Terminal terminal, PaymentData paymentData, Submit3Ds submit3Ds)
         {
             return new ProcessingResponse
                 { ProcessingOrderId = Guid.NewGuid().ToString(), Status = OperationStatus.Success };

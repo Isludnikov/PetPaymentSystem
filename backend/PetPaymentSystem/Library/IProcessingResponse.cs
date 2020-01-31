@@ -9,5 +9,7 @@ namespace PetPaymentSystem.Library
         string ProcessingOrderId { get; set; }
 
         AdditionalAuth AuthData { get; set; }
+
+        bool SavePaymentData { get; set; }
     }
 }
